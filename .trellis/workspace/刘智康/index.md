@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 2
+- **Total Sessions**: 3
 - **Last Active**: 2026-04-25
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~137 | Active |
+| `journal-1.md` | ~225 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits |
 |---|------|-------|---------|
+| 3 | 2026-04-25 | Deep-Model Optimization, Expanded PDU Dataset, and Holdout Generalization | `de46d4f`, `dd6887a`, `31795b1` |
 | 2 | 2026-04-25 | BigQuery Access, Multi-PDU Dataset Build, and Baseline Benchmark | - |
 | 1 | 2026-04-24 | Cluster-Data Energy Modeling Setup | - |
 <!-- @@@/auto:session-history -->

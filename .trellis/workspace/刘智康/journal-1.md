@@ -111,3 +111,115 @@ Completed the first live BigQuery data-access pass, exported a contract-aligned 
 - Run deep-model training on `data/processed/v1`.
 - Compare LSTM and Transformer results against the new baseline benchmark.
 - Decide whether to expand the export window beyond the current 288-window multi-PDU sample.
+
+
+## Session 3: Deep-Model Optimization, Expanded PDU Dataset, and Holdout Generalization
+
+**Date**: 2026-04-25
+**Task**: Deep-Model Optimization, Expanded PDU Dataset, and Holdout Generalization
+
+### Summary
+
+(Add summary)
+
+### Main Changes
+
+### Summary
+
+Completed the full deep-model optimization pass, extended the dataset beyond the initial 3-PDU scope, and finished the first unseen-PDU generalization evaluation.
+
+### Main Changes
+
+- Tuned the sequence-model pipeline for residual forecasting with train-split standardization, inherited history context for val/test windows, stronger defaults, early stopping, and configurable model hyperparameters.
+- Added sequence benchmark comparison tooling and ran LSTM / Transformer experiments against the baseline benchmark on `data/processed/v1`.
+- Completed a focused LSTM ablation pass over `hidden_size`, `num_layers`, `learning_rate`, `seed`, `target_mode=residual`, scheduler options, regularization, and stopping behavior.
+- Verified that `residual + num_layers=1 + hidden_size=96 + weight_decay=1e-3` is the strongest single-model configuration on the original `v1` dataset.
+- Added sequence-ensemble evaluation tooling and confirmed that a 3-member residual-LSTM ensemble improves repeated-run metrics, though it was not yet a clean across-the-board win on the original `v1` comparison.
+- Added loss / normalization experiment controls to the deep-learning trainer and verified that `MSE + standard target scaling` still beats the tested Huber and no-target-scaling variants.
+- Designed a staged multi-PDU expansion plan for BigQuery, added candidate-ranking SQL, and created ready-to-run development and holdout export SQL templates.
+- Read the BigQuery candidate-ranking output and selected `pdu20-24` as the next development PDUs plus `pdu17` and `pdu25` as unseen holdout PDUs.
+- Built `data/processed/v2_expanded_dev` from the expanded development export and `data/processed/v2_holdout_pdu` as a `full_only` unseen-PDU evaluation dataset.
+- Extended the dataset builder to support `split_mode=full_only` so holdout tables can be preserved for final external evaluation.
+- Added holdout evaluation scripts for both baseline models and saved sequence checkpoints.
+- Retrained baselines and the best residual LSTM on `v2_expanded_dev`, then evaluated both on `v2_holdout_pdu/full.parquet`.
+- Confirmed that the tuned residual LSTM now clearly beats `random_forest` on unseen-PDU holdout performance, which is the strongest generalization result obtained so far.
+- Backed up all of the above results to GitHub after each major milestone.
+
+### Updated Files
+
+- `src/data/sequence_dataset.py`
+- `src/models/sequence_models.py`
+- `src/models/baselines.py`
+- `src/training/train_baselines.py`
+- `src/training/train_deep_models.py`
+- `src/training/compare_model_benchmarks.py`
+- `src/training/evaluate_sequence_ensemble.py`
+- `src/training/evaluate_baselines_holdout.py`
+- `src/training/evaluate_sequence_holdout.py`
+- `src/training/README.md`
+- `src/data/build_training_dataset.py`
+- `configs/deep-learning/default.json`
+- `configs/deep-learning/lstm-residual-best.json`
+- `sql/README.md`
+- `sql/EXPANSION_PLAN.md`
+- `sql/validation/04_rank_pdu_candidates.sql`
+- `sql/extraction/06_export_expanded_pdu_training_table.sql`
+- `sql/extraction/07_export_holdout_pdu_training_table.sql`
+- `.trellis/tasks/04-24-train-deep-models/task.json`
+- `data/processed/v2_expanded_dev/`
+- `data/processed/v2_holdout_pdu/`
+- `reports/deep-models/`
+- `reports/comparisons/`
+- `reports/benchmarks/`
+- `reports/data-quality/`
+
+### Testing
+
+- [OK] `py_compile` checks passed for new and updated training / evaluation scripts.
+- [OK] `train_baselines.py` completed successfully on `data/processed/v1` and `data/processed/v2_expanded_dev`.
+- [OK] `train_deep_models.py` completed successfully across the main ablation, regularization, loss, and v2 retraining passes.
+- [OK] `evaluate_sequence_ensemble.py` completed successfully on the 3-checkpoint residual-LSTM ensemble.
+- [OK] `build_training_dataset.py` completed successfully for both `v2_expanded_dev` and `v2_holdout_pdu`.
+- [OK] Holdout evaluation scripts completed successfully for both baselines and the saved LSTM checkpoint.
+
+### Results
+
+- Original best single-model `v1` residual LSTM: test MAE `0.0036510052159428596`, test RMSE `0.004565171914039746`, test R2 `0.9269131917464354`
+- Original `v1` 3-member residual-LSTM ensemble: test MAE `0.004013902973383665`, test RMSE `0.004764464303393069`, test R2 `0.9203927027788574`
+- Expanded development dataset: `data/processed/v2_expanded_dev` with `2983` rows (train `2078`, val `450`, test `455`)
+- Unseen-PDU holdout dataset: `data/processed/v2_holdout_pdu/full.parquet` with `1132` rows
+- `v2` best residual LSTM dev-test metrics: MAE `0.0021204082295298576`, RMSE `0.0027021152175776154`, R2 `0.99590703404911`
+- `v2` random forest dev-test metrics: MAE `0.005244745450727983`, RMSE `0.008794527925699442`, R2 `0.956643376358224`
+- Unseen-PDU holdout `random_forest`: MAE `0.006086088313678801`, RMSE `0.008717445055781486`, R2 `0.9658479824650014`
+- Unseen-PDU holdout residual LSTM: MAE `0.003698076121509075`, RMSE `0.005011821217281058`, R2 `0.9886599759530615`
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Decide whether to adopt the `v2` residual LSTM as the primary model.
+- Optionally run a repeated-seed holdout stability check on `v2`.
+- Package the v2 generalization results into the advisor-facing report and final project summary.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `de46d4f` | (see git log) |
+| `dd6887a` | (see git log) |
+| `31795b1` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
