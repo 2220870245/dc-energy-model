@@ -23,6 +23,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset-dir", required=True, help="Processed dataset directory")
     parser.add_argument("--output-dir", required=True, help="Benchmark output directory")
     parser.add_argument("--label", default="measured_power_util", help="Label column")
+    parser.add_argument(
+        "--models",
+        nargs="*",
+        default=None,
+        help="Optional model subset to run; defaults to all registered baselines",
+    )
+    parser.add_argument("--random-seed", type=int, default=42, help="Random seed for stochastic baselines")
     return parser.parse_args()
 
 
@@ -30,8 +37,16 @@ def load_split(dataset_dir: Path, split_name: str) -> pd.DataFrame:
     return pd.read_parquet(dataset_dir / f"{split_name}.parquet")
 
 
-def fit_and_score(model_name: str, feature_columns: list[str], train: pd.DataFrame, val: pd.DataFrame, test: pd.DataFrame, label: str) -> dict[str, object]:
-    model = build_model(model_name)
+def fit_and_score(
+    model_name: str,
+    feature_columns: list[str],
+    train: pd.DataFrame,
+    val: pd.DataFrame,
+    test: pd.DataFrame,
+    label: str,
+    random_seed: int,
+) -> dict[str, object]:
+    model = build_model(model_name, random_seed=random_seed)
     x_train = train[feature_columns].to_numpy()
     y_train = train[label].to_numpy()
     x_val = val[feature_columns].to_numpy()
@@ -45,6 +60,7 @@ def fit_and_score(model_name: str, feature_columns: list[str], train: pd.DataFra
 
     return {
         "model": model_name,
+        "random_seed": random_seed,
         "features": feature_columns,
         "val": evaluate_regression(y_val, val_pred),
         "test": evaluate_regression(y_test, test_pred),
@@ -63,11 +79,23 @@ def main() -> None:
 
     results = []
     feature_sets = default_feature_sets()
+    if args.models:
+        feature_sets = {name: feature_sets[name] for name in args.models}
     for model_name, feature_columns in feature_sets.items():
         missing = [column for column in feature_columns if column not in train.columns]
         if missing:
             raise ValueError(f"Model {model_name} is missing columns: {missing}")
-        results.append(fit_and_score(model_name, feature_columns, train, val, test, args.label))
+        results.append(
+            fit_and_score(
+                model_name,
+                feature_columns,
+                train,
+                val,
+                test,
+                args.label,
+                args.random_seed,
+            )
+        )
 
     benchmark_rows = []
     for item in results:

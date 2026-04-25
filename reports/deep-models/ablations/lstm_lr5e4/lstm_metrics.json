@@ -1,0 +1,178 @@
+{
+  "model": "lstm",
+  "label": "measured_power_util",
+  "target_mode": "absolute",
+  "context_length": 12,
+  "epochs_requested": 80,
+  "epochs_trained": 25,
+  "best_epoch": 13,
+  "patience": 12,
+  "batch_size": 32,
+  "learning_rate": 0.0005,
+  "weight_decay": 0.0001,
+  "hidden_size": 64,
+  "num_layers": 2,
+  "dropout": 0.1,
+  "nhead": 4,
+  "seed": 42,
+  "feature_columns": [
+    "instance_count",
+    "collection_count",
+    "machine_count",
+    "total_cpu_usage",
+    "avg_cpu_usage",
+    "max_cpu_usage",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "prev_measured_power_util",
+    "prev_total_cpu_usage"
+  ],
+  "best_val_loss": 0.04469832961714661,
+  "sample_counts": {
+    "train": 567,
+    "val": 129,
+    "test": 132
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.4176937669410487,
+      "val_loss": 0.09324077906650166
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.10548252499345329,
+      "val_loss": 0.09182539290582487
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.0590486319725791,
+      "val_loss": 0.1110294936585796
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.05092382413947814,
+      "val_loss": 0.05458896865079165
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.04331029834623269,
+      "val_loss": 0.08613295385310817
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.04950640158402541,
+      "val_loss": 0.05978481909765523
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.039924364517290124,
+      "val_loss": 0.061515211019405096
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.037496045340227074,
+      "val_loss": 0.04697218280314475
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.035729868426209406,
+      "val_loss": 0.046857505262461165
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.031397143106191454,
+      "val_loss": 0.0499175666261089
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.03088154353372214,
+      "val_loss": 0.04741231777322616
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.029530832330438406,
+      "val_loss": 0.05037195016016332
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.029494136000278767,
+      "val_loss": 0.04469832961714661
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.028052526123729753,
+      "val_loss": 0.05409434481069099
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.02602745629715646,
+      "val_loss": 0.046418410105009876
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.02638444121486821,
+      "val_loss": 0.05702288197570069
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.02461107916854046,
+      "val_loss": 0.0594288420451935
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.024044375166927697,
+      "val_loss": 0.05594083213379567
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.026048730746752582,
+      "val_loss": 0.05196748606052048
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.024289022549671472,
+      "val_loss": 0.053386866468791816
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.025604448637660638,
+      "val_loss": 0.051607268349837886
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.022146907968469607,
+      "val_loss": 0.05085153034491132
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.020841666025879942,
+      "val_loss": 0.06482428249046147
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.021509022821509648,
+      "val_loss": 0.05030311720604582
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.019326394289153805,
+      "val_loss": 0.052806035362819366
+    }
+  ],
+  "val_metrics": {
+    "mae": 0.006061268970370293,
+    "rmse": 0.007298427112116554,
+    "mape": 0.008728841319680214,
+    "smape": 0.008721617981791496,
+    "r2": 0.6051926257285289
+  },
+  "test_metrics": {
+    "mae": 0.007644655182957649,
+    "rmse": 0.00950009437603564,
+    "mape": 0.011315101757645607,
+    "smape": 0.01122710295021534,
+    "r2": 0.683495024991335
+  }
+}

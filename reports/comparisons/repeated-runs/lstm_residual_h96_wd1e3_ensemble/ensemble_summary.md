@@ -1,0 +1,16 @@
+# Sequence Ensemble Summary: lstm_residual_h96_wd1e3_ensemble
+
+- split: test
+- member_count: 3
+- member_mean_mae: 0.004031171246121327
+- member_mean_rmse: 0.004828793208836696
+- member_mean_r2: 0.9180642085665726
+- ensemble_mae: 0.004013902973383665
+- ensemble_rmse: 0.004764464303393069
+- ensemble_r2: 0.9203927027788574
+
+## Members
+
+- lstm_residual_h96_seed42_wd1e3: mae=0.0036510052159428596, rmse=0.004565171914039746, r2=0.9269131917464354
+- lstm_residual_h96_wd1e3_seed7: mae=0.004108082503080368, rmse=0.004825875684822982, r2=0.9183272876486023
+- lstm_residual_h96_wd1e3_seed21: mae=0.0043344260193407536, rmse=0.00509533202764736, r2=0.9089521463046797

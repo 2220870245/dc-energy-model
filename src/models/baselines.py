@@ -44,7 +44,7 @@ class CpuHeuristicBaseline:
         return self.bias_ + self.weight_ * x[:, 0]
 
 
-def build_model(name: str):
+def build_model(name: str, random_seed: int = 42):
     if name == "persistence":
         return PersistenceBaseline()
     if name == "moving_average":
@@ -59,7 +59,7 @@ def build_model(name: str):
         return RandomForestRegressor(
             n_estimators=200,
             max_depth=8,
-            random_state=42,
+            random_state=random_seed,
             n_jobs=1,
         )
     raise ValueError(f"Unknown baseline model: {name}")

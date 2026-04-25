@@ -85,11 +85,29 @@ class TransformerRegressor(nn.Module):
         projected = self.input_proj(x)
         encoded = self.encoder(self.positional(projected))
         return self.head(encoded[:, -1, :])
-
-
-def build_sequence_model(model_name: str, input_size: int) -> nn.Module:
+def build_sequence_model(
+    model_name: str,
+    input_size: int,
+    hidden_size: int = 64,
+    num_layers: int = 2,
+    dropout: float = 0.1,
+    nhead: int = 4,
+) -> nn.Module:
     if model_name == "lstm":
-        return LSTMRegressor(input_size=input_size)
+        return LSTMRegressor(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            dropout=dropout,
+        )
     if model_name == "transformer":
-        return TransformerRegressor(input_size=input_size)
+        if hidden_size % nhead != 0:
+            raise ValueError(f"Transformer hidden_size must be divisible by nhead, got {hidden_size} and {nhead}")
+        return TransformerRegressor(
+            input_size=input_size,
+            d_model=hidden_size,
+            nhead=nhead,
+            num_layers=num_layers,
+            dropout=dropout,
+        )
     raise ValueError(f"Unknown sequence model: {model_name}")

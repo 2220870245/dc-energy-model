@@ -14,11 +14,11 @@
   "branch": null,
   "base_branch": "main",
   "worktree_path": null,
-  "current_phase": 1,
+  "current_phase": 3,
   "next_action": [
-    { "phase": 1, "action": "implement-lstm-pipeline" },
-    { "phase": 2, "action": "implement-transformer-pipeline" },
-    { "phase": 3, "action": "run-ablation-and-comparison" }
+    { "phase": 3, "action": "decide-whether-to-adopt-small-ensemble-as-final-deep-model" },
+    { "phase": 3, "action": "test-normalization-or-loss-shaping-for-variance-reduction" },
+    { "phase": 3, "action": "decide-whether-to-expand-dataset-window" }
   ],
   "commit": null,
   "pr_url": null,
@@ -33,9 +33,11 @@
     "src/data/sequence_dataset.py",
     "src/models/sequence_models.py",
     "src/training/train_deep_models.py",
+    "src/training/compare_model_benchmarks.py",
     "src/training/README.md",
     "configs/deep-learning/default.json",
-    "reports/"
+    "reports/deep-models/v1/",
+    "reports/comparisons/v1/"
   ],
-  "notes": "PyTorch 训练骨架、序列数据集和 LSTM/Transformer 模型定义已落地。当前仍依赖 processed 数据集与 baseline 结果来完成真实训练和公平对比。"
+  "notes": "已修正深度学习训练管道中的两个关键问题：1) 基于 train split 的特征与标签标准化；2) val/test 序列窗口继承前一 split 的历史上下文，同时加入更强的默认训练参数与早停。优化后结果写入 reports/deep-models/v1_tuned 与 reports/comparisons/v1_tuned，其中 LSTM 提升到 test MAE=0.00697、test RMSE=0.00855、test R2=0.7436，Transformer 提升到 test MAE=0.00862、test RMSE=0.01040、test R2=0.6204。随后完成了 LSTM 窄消融：hidden_size=32/128、num_layers=1、learning_rate=5e-4、seed=7、target_mode=residual，以及 residual+num_layers=1 组合实验。结果表明：1) context_length=24 会恶化表现；2) 绝对预测里 num_layers=1 最优（test MAE=0.00601、test RMSE=0.00737、test R2=0.8093）；3) residual 目标明显优于 absolute。进一步围绕 residual + num_layers=1 做容量细调后，hidden_size=96 成为当前最优单次运行，达到 test MAE=0.00370、test RMSE=0.00462、test R2=0.9250，已超过当前 random_forest baseline（0.00384 / 0.00488 / 0.9166）。随后补做了 repeated-run 公平比较：使用 seed=42/7/21 分别重跑 residual-LSTM-h96 与 random_forest。结果表明，LSTM 三次平均为 test MAE=0.00408、test RMSE=0.00488、test R2=0.91646，而 random_forest 三次平均为 test MAE=0.00381、test RMSE=0.00483、test R2=0.91814。也就是说，最佳单次 LSTM 可以胜出，但平均上仍略逊于 random_forest，且方差明显更大。之后尝试了 `scheduler=plateau` 的稳定性方案，但对 seed=42/7/21 的结果没有任何改变，说明当前方差问题并不是由缺少简单的学习率衰减造成的。最新正则化实验表明：在当前 `num_layers=1` 的 LSTM 上，`dropout` 实际上不会影响结果，而 `weight_decay=1e-3` 能把 repeated-run 平均改善到 test MAE=0.00403、test RMSE=0.00483、test R2=0.91806，已经与 random_forest 的 repeated-run 平均非常接近，但方差仍明显更高。随后测试了更保守的 early stopping（`patience=20,min_epochs=30` 与 `patience=30,min_epochs=40`），结果最佳 checkpoint 仍固定在 epoch 7，最终测试指标完全不变，说明当前方差问题也不是由 stopping 不够保守造成的。最新补做的 3-member 小型集成（基于 `weight_decay=1e-3` 的 seed=42/7/21 best checkpoints）已写入 reports/comparisons/repeated-runs/lstm_residual_h96_wd1e3_ensemble。结果为 test MAE=0.00401、test RMSE=0.00476、test R2=0.92039，相比单模型 repeated-run 平均进一步改善，并在 RMSE/R2 上略优于 repeated-run random_forest 平均，但在 MAE 上仍略差。因此 run averaging 对当前深度模型路线是有效的稳定性工具，但还不是对 baseline 的全面胜出。下一步更合理的是决定是否把该小型集成作为最终深度模型结果，或继续尝试更偏 loss/normalization 层面的方差压制，而不是继续扩展更长历史窗口。"
 }

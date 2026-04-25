@@ -1,0 +1,63 @@
+{
+  "model": "transformer",
+  "label": "measured_power_util",
+  "context_length": 12,
+  "epochs": 5,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "feature_columns": [
+    "instance_count",
+    "collection_count",
+    "machine_count",
+    "total_cpu_usage",
+    "avg_cpu_usage",
+    "max_cpu_usage",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "prev_measured_power_util",
+    "prev_total_cpu_usage"
+  ],
+  "best_val_loss": 0.00017783083635011828,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.2152674500575877,
+      "val_loss": 0.04431598281027169
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.06053065444544825,
+      "val_loss": 0.0015032515180126954
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.010125739670751166,
+      "val_loss": 0.02304735024689987
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.0072011639016255,
+      "val_loss": 0.00017783083635011828
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.003902680286562737,
+      "val_loss": 0.00024289050908078268
+    }
+  ],
+  "val_metrics": {
+    "mae": 0.010973256081342697,
+    "rmse": 0.013335322869626137,
+    "mape": 0.015904955565929413,
+    "smape": 0.015791624784469604,
+    "r2": -0.13045871866835035
+  },
+  "test_metrics": {
+    "mae": 0.020543409511446953,
+    "rmse": 0.026400977135879983,
+    "mape": 0.030844999477267265,
+    "smape": 0.03008909337222576,
+    "r2": -0.889296137250575
+  }
+}

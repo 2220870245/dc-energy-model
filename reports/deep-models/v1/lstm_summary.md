@@ -1,0 +1,6 @@
+# Deep Model Summary: lstm
+
+- best_val_loss: 0.0008567224277974537
+- test_mae: 0.019338227808475494
+- test_rmse: 0.02294804564988066
+- test_r2: -0.42741895955114284

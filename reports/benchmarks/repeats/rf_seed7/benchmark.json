@@ -1,0 +1,33 @@
+[
+  {
+    "model": "random_forest",
+    "random_seed": 7,
+    "features": [
+      "instance_count",
+      "collection_count",
+      "machine_count",
+      "total_cpu_usage",
+      "avg_cpu_usage",
+      "max_cpu_usage",
+      "hour",
+      "day_of_week",
+      "is_weekend",
+      "prev_measured_power_util",
+      "prev_total_cpu_usage"
+    ],
+    "val": {
+      "mae": 0.003348581456203873,
+      "rmse": 0.004230189897268785,
+      "mape": 0.0048124677477830256,
+      "smape": 0.004810623275720256,
+      "r2": 0.8673685750232508
+    },
+    "test": {
+      "mae": 0.003832684082006597,
+      "rmse": 0.004861265690037299,
+      "mape": 0.005625994066337349,
+      "smape": 0.005616165600809716,
+      "r2": 0.9171250304524871
+    }
+  }
+]
