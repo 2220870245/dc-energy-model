@@ -117,6 +117,12 @@ Compared with the repeated-run `random_forest` mean:
 - RMSE and R2 are now slightly better
 - run averaging is therefore useful for stability, but not yet a clean across-the-board baseline win
 
+Loss / normalization follow-up:
+- `HuberLoss(delta=1.0)` was slightly worse than the current `MSELoss` control
+- `HuberLoss(delta=0.5)` was worse again
+- disabling target standardization (`target_scaling=none`) was clearly harmful and pushed the best checkpoint to the final epoch
+- the best known single-model setup still remains `MSE + standard target scaling + weight_decay=1e-3`
+
 ## Compare Baseline vs Deep Models
 
 After the deep-model runs finish, combine the benchmark outputs with:

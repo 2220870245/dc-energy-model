@@ -43,6 +43,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument("--loss", choices=["mse", "huber"], default="mse")
+    parser.add_argument("--huber-delta", type=float, default=1.0)
+    parser.add_argument("--target-scaling", choices=["standard", "none"], default="standard")
     parser.add_argument("--scheduler", choices=["none", "plateau"], default="none")
     parser.add_argument("--scheduler-patience", type=int, default=4)
     parser.add_argument("--scheduler-factor", type=float, default=0.5)
@@ -76,6 +79,30 @@ def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def configure_target_scaling(
+    standardizer: SequenceStandardizer,
+    target_scaling: str,
+) -> SequenceStandardizer:
+    if target_scaling == "standard":
+        return standardizer
+    if target_scaling == "none":
+        return SequenceStandardizer(
+            feature_mean=standardizer.feature_mean,
+            feature_std=standardizer.feature_std,
+            target_mean=0.0,
+            target_std=1.0,
+        )
+    raise ValueError(f"Unknown target scaling: {target_scaling}")
+
+
+def build_loss(loss_name: str, huber_delta: float) -> nn.Module:
+    if loss_name == "mse":
+        return nn.MSELoss()
+    if loss_name == "huber":
+        return nn.HuberLoss(delta=huber_delta)
+    raise ValueError(f"Unknown loss: {loss_name}")
 
 
 def make_loader(
@@ -179,6 +206,7 @@ def main() -> None:
         label_column=target_column,
         context_length=args.context_length,
     )
+    standardizer = configure_target_scaling(standardizer, args.target_scaling)
 
     train_dataset, train_loader = make_loader(
         frame=train_frame,
@@ -236,7 +264,7 @@ def main() -> None:
             patience=args.scheduler_patience,
             min_lr=args.scheduler_min_lr,
         )
-    criterion = nn.MSELoss()
+    criterion = build_loss(args.loss, args.huber_delta)
 
     history: list[dict[str, float]] = []
     best_val_loss = float("inf")
@@ -297,6 +325,9 @@ def main() -> None:
                         "target_mean": standardizer.target_mean,
                         "target_std": standardizer.target_std,
                     },
+                    "loss": args.loss,
+                    "huber_delta": args.huber_delta,
+                    "target_scaling": args.target_scaling,
                 },
                 checkpoint_path,
             )
@@ -350,6 +381,9 @@ def main() -> None:
         "batch_size": args.batch_size,
         "learning_rate": args.learning_rate,
         "weight_decay": args.weight_decay,
+        "loss": args.loss,
+        "huber_delta": args.huber_delta,
+        "target_scaling": args.target_scaling,
         "scheduler": args.scheduler,
         "scheduler_patience": args.scheduler_patience,
         "scheduler_factor": args.scheduler_factor,
@@ -379,6 +413,8 @@ def main() -> None:
         f"# Deep Model Summary: {args.model}",
         "",
         f"- target_mode: {args.target_mode}",
+        f"- loss: {args.loss}",
+        f"- target_scaling: {args.target_scaling}",
         f"- scheduler: {args.scheduler}",
         f"- best_epoch: {best_epoch}",
         f"- epochs_trained: {len(history)}",
