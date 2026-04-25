@@ -19,6 +19,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report-path", required=True, help="Markdown path for the quality report")
     parser.add_argument("--version", default="v1", help="Dataset version label")
     parser.add_argument("--label", default="measured_power_util", help="Target label column")
+    parser.add_argument(
+        "--split-mode",
+        choices=["chronological", "full_only"],
+        default="chronological",
+        help="Whether to build train/val/test splits or keep the whole table as one holdout dataset",
+    )
     return parser.parse_args()
 
 
@@ -104,6 +110,25 @@ def write_report(report_path: Path, version: str, label_column: str, frame: pd.D
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def write_full_report(report_path: Path, version: str, label_column: str, frame: pd.DataFrame) -> None:
+    summary = summarize_quality(frame, label_column)
+    lines = [
+        f"# Dataset Quality Report: {version}",
+        "",
+        f"- label: `{label_column}`",
+        f"- total rows: {summary.row_count}",
+        f"- duplicate keys: {summary.duplicate_rows}",
+        f"- label min: {summary.min_label}",
+        f"- label max: {summary.max_label}",
+        f"- split mode: full_only",
+        "",
+        "## Missing Rate By Column",
+    ]
+    for column, ratio in summary.missing_rate_by_column.items():
+        lines.append(f"- {column}: {ratio:.6f}")
+    report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main() -> None:
     args = parse_args()
     input_path = Path(args.input)
@@ -113,24 +138,39 @@ def main() -> None:
     frame = load_frame(input_path)
     validate_columns(frame)
     built = build_features(frame, args.label)
-    train, val, test = chronological_split(built, SplitConfig())
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    train.to_parquet(output_dir / "train.parquet", index=False)
-    val.to_parquet(output_dir / "val.parquet", index=False)
-    test.to_parquet(output_dir / "test.parquet", index=False)
+    if args.split_mode == "chronological":
+        train, val, test = chronological_split(built, SplitConfig())
+        train.to_parquet(output_dir / "train.parquet", index=False)
+        val.to_parquet(output_dir / "val.parquet", index=False)
+        test.to_parquet(output_dir / "test.parquet", index=False)
 
+        metadata = {
+            "version": args.version,
+            "label": args.label,
+            "split_mode": args.split_mode,
+            "row_count": len(built),
+            "train_rows": len(train),
+            "val_rows": len(val),
+            "test_rows": len(test),
+            "columns": list(built.columns),
+        }
+        (output_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+        write_report(report_path, args.version, args.label, built, train, val, test)
+        return
+
+    built.to_parquet(output_dir / "full.parquet", index=False)
     metadata = {
         "version": args.version,
         "label": args.label,
+        "split_mode": args.split_mode,
         "row_count": len(built),
-        "train_rows": len(train),
-        "val_rows": len(val),
-        "test_rows": len(test),
+        "full_rows": len(built),
         "columns": list(built.columns),
     }
     (output_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
-    write_report(report_path, args.version, args.label, built, train, val, test)
+    write_full_report(report_path, args.version, args.label, built)
 
 
 if __name__ == "__main__":

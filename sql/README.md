@@ -9,9 +9,12 @@ This directory contains the first-pass BigQuery SQL templates for the Google clu
 3. `extraction/03_instance_usage_join_pdu.sql`
 4. `extraction/04_build_pdu_cpu_power_5min.sql`
 5. `extraction/05_export_pdu_training_table.sql`
-6. `validation/01_validate_power_range.sql`
-7. `validation/02_validate_join_coverage.sql`
-8. `validation/03_validate_multi_pdu_export_scope.sql`
+6. `validation/04_rank_pdu_candidates.sql`
+7. `extraction/06_export_expanded_pdu_training_table.sql`
+8. `extraction/07_export_holdout_pdu_training_table.sql`
+9. `validation/01_validate_power_range.sql`
+10. `validation/02_validate_join_coverage.sql`
+11. `validation/03_validate_multi_pdu_export_scope.sql`
 
 ## Notes
 
@@ -21,6 +24,10 @@ This directory contains the first-pass BigQuery SQL templates for the Google clu
 - Replace output table names and destination datasets to match your GCP project.
 - `05_export_pdu_training_table.sql` is aligned with `src/data/dataset_contract.py`.
 - Run `validation/03_validate_multi_pdu_export_scope.sql` before exporting a multi-PDU CSV.
+- Use `validation/04_rank_pdu_candidates.sql` before any PDU expansion pass.
+- See `EXPANSION_PLAN.md` for the recommended staged expansion workflow.
+- `06_export_expanded_pdu_training_table.sql` is now prefilled with the current development PDU list.
+- `07_export_holdout_pdu_training_table.sql` is prefilled with the current unseen-PDU holdout list.
 
 ## Live Validation Status
 
