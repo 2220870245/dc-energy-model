@@ -1,0 +1,153 @@
+[
+  {
+    "model": "persistence",
+    "features": [
+      "prev_measured_power_util"
+    ],
+    "val": {
+      "mae": 0.0034961240310077473,
+      "rmse": 0.004396087055023908,
+      "mape": 0.00502675452090437,
+      "smape": 0.005023400394532795,
+      "r2": 0.8567616609388611
+    },
+    "test": {
+      "mae": 0.004030303030303024,
+      "rmse": 0.005081159495448038,
+      "mape": 0.0059095642252962885,
+      "smape": 0.005910999350167018,
+      "r2": 0.9094579504862255
+    }
+  },
+  {
+    "model": "moving_average",
+    "features": [
+      "prev_measured_power_util",
+      "prev_total_cpu_usage"
+    ],
+    "val": {
+      "mae": 454.6995466854775,
+      "rmse": 455.38215337442927,
+      "mape": 651.9929176959272,
+      "smape": 1.9938695106042643,
+      "r2": -1537017176.3090618
+    },
+    "test": {
+      "mae": 447.39609018947135,
+      "rmse": 448.1187931517266,
+      "mape": 655.6056100365302,
+      "smape": 1.993902461774004,
+      "r2": -704224257.9407402
+    }
+  },
+  {
+    "model": "linear_regression",
+    "features": [
+      "instance_count",
+      "collection_count",
+      "machine_count",
+      "total_cpu_usage",
+      "avg_cpu_usage",
+      "max_cpu_usage",
+      "hour",
+      "day_of_week",
+      "is_weekend",
+      "prev_measured_power_util",
+      "prev_total_cpu_usage"
+    ],
+    "val": {
+      "mae": 0.010229219612748267,
+      "rmse": 0.012320420911796835,
+      "mape": 0.014641258983964102,
+      "smape": 0.014710883884503739,
+      "r2": -0.12506547763348275
+    },
+    "test": {
+      "mae": 0.012003978014222668,
+      "rmse": 0.01528272535620245,
+      "mape": 0.017772721518919937,
+      "smape": 0.017578261484030456,
+      "r2": 0.180920072530953
+    }
+  },
+  {
+    "model": "ridge",
+    "features": [
+      "instance_count",
+      "collection_count",
+      "machine_count",
+      "total_cpu_usage",
+      "avg_cpu_usage",
+      "max_cpu_usage",
+      "hour",
+      "day_of_week",
+      "is_weekend",
+      "prev_measured_power_util",
+      "prev_total_cpu_usage"
+    ],
+    "val": {
+      "mae": 0.009965833329352596,
+      "rmse": 0.012301736783911194,
+      "mape": 0.014273792452918816,
+      "smape": 0.014364600501191078,
+      "r2": -0.12165570321703822
+    },
+    "test": {
+      "mae": 0.012490697586257076,
+      "rmse": 0.01609761335402873,
+      "mape": 0.01848100829305509,
+      "smape": 0.018366864642156328,
+      "r2": 0.09124324947052054
+    }
+  },
+  {
+    "model": "cpu_heuristic",
+    "features": [
+      "total_cpu_usage"
+    ],
+    "val": {
+      "mae": 0.01473422048232776,
+      "rmse": 0.018300643117306937,
+      "mape": 0.02114158672775308,
+      "smape": 0.021386805578887544,
+      "r2": -1.482329405954232
+    },
+    "test": {
+      "mae": 0.015001557905546309,
+      "rmse": 0.018767703232888157,
+      "mape": 0.022148304518814152,
+      "smape": 0.022046690479698292,
+      "r2": -0.2352274124154694
+    }
+  },
+  {
+    "model": "random_forest",
+    "features": [
+      "instance_count",
+      "collection_count",
+      "machine_count",
+      "total_cpu_usage",
+      "avg_cpu_usage",
+      "max_cpu_usage",
+      "hour",
+      "day_of_week",
+      "is_weekend",
+      "prev_measured_power_util",
+      "prev_total_cpu_usage"
+    ],
+    "val": {
+      "mae": 0.0032710632197407025,
+      "rmse": 0.004225781544995867,
+      "mape": 0.004701385841529486,
+      "smape": 0.004699323345100228,
+      "r2": 0.867644865876547
+    },
+    "test": {
+      "mae": 0.0038355029222653853,
+      "rmse": 0.004876816530868513,
+      "mape": 0.005634878359105025,
+      "smape": 0.005623906374316164,
+      "r2": 0.9165939601951361
+    }
+  }
+]

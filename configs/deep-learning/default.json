@@ -1,0 +1,13 @@
+{
+  "dataset_dir": "data/processed/v1",
+  "output_dir": "reports/deep-models/v1",
+  "label": "measured_power_util",
+  "context_length": 12,
+  "epochs": 5,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "models": [
+    "lstm",
+    "transformer"
+  ]
+}

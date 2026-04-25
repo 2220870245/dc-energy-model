@@ -1,0 +1,42 @@
+﻿{
+  "id": "build-training-dataset",
+  "name": "build-training-dataset",
+  "title": "构建训练样本表与数据质量门禁",
+  "description": "将抽取结果整理成可训练的数据集，完成缺失值、异常值、归一化和时间切分规则。",
+  "status": "in_progress",
+  "dev_type": "backend",
+  "scope": "energy-model",
+  "priority": "P0",
+  "creator": "project-owner",
+  "assignee": "project-owner",
+  "createdAt": "2026-04-24",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "current_phase": 1,
+  "next_action": [
+    { "phase": 1, "action": "materialize-dataset" },
+    { "phase": 2, "action": "run-quality-checks" },
+    { "phase": 3, "action": "freeze-feature-set" }
+  ],
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [
+    { "name": "生成 PDU 乘以时间窗样本表", "status": "in_progress" },
+    { "name": "实现缺失值与异常值处理策略", "status": "completed" },
+    { "name": "实现训练、验证、测试集切分", "status": "completed" },
+    { "name": "输出特征清单与数据质量报告", "status": "completed" }
+  ],
+  "relatedFiles": [
+    ".trellis/tasks/04-24-build-training-dataset/prd.md",
+    "src/data/build_training_dataset.py",
+    "src/data/dataset_contract.py",
+    "src/data/quality_checks.py",
+    "src/data/README.md",
+    "configs/dataset/default.json",
+    "data/processed/",
+    "reports/data-quality/"
+  ],
+  "notes": "数据集构建脚本、版本输出和质量报告骨架已落地。当前仍依赖 BigQuery 导出的真实输入文件来完成 Gate 1 样本有效性验证。"
+}

@@ -1,0 +1,12 @@
+﻿{
+  "version": "v1",
+  "label": "measured_power_util",
+  "default_input": "data/raw/bigquery_exports/pdu_training_table_v1.parquet",
+  "default_output_dir": "data/processed/v1",
+  "default_report_path": "reports/data-quality/v1.md",
+  "time_split": {
+    "train_ratio": 0.70,
+    "val_ratio": 0.15,
+    "test_ratio": 0.15
+  }
+}

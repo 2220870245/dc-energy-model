@@ -1,0 +1,42 @@
+﻿{
+  "id": "build-extraction-sql",
+  "name": "build-extraction-sql",
+  "title": "实现 BigQuery 抽取与关联 SQL",
+  "description": "编写并验证 PowerData2019、ClusterData2019 与 machine_to_pdu_mapping 的抽取和关联 SQL。",
+  "status": "in_progress",
+  "dev_type": "backend",
+  "scope": "energy-model",
+  "priority": "P0",
+  "creator": "project-owner",
+  "assignee": "project-owner",
+  "createdAt": "2026-04-24",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "current_phase": 1,
+  "next_action": [
+    { "phase": 1, "action": "draft-sql-joins" },
+    { "phase": 2, "action": "run-sample-queries" },
+    { "phase": 3, "action": "stabilize-export-contract" }
+  ],
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [
+    { "name": "实现 power trace 抽取 SQL", "status": "completed" },
+    { "name": "实现 workload 与 machine 到 PDU 映射 SQL", "status": "completed" },
+    { "name": "实现时间对齐与聚合 SQL", "status": "completed" },
+    { "name": "完成样例查询与成本验证", "status": "in_progress" }
+  ],
+  "relatedFiles": [
+    ".trellis/tasks/04-24-build-extraction-sql/prd.md",
+    "sql/README.md",
+    "sql/extraction/01_sample_power_trace.sql",
+    "sql/extraction/02_machine_to_pdu_mapping.sql",
+    "sql/extraction/03_instance_usage_join_pdu.sql",
+    "sql/extraction/04_build_pdu_cpu_power_5min.sql",
+    "sql/validation/01_validate_power_range.sql",
+    "sql/validation/02_validate_join_coverage.sql"
+  ],
+  "notes": "SQL 模板已根据 Google 官方 power_trace_analysis_colab.ipynb 落地。当前阻塞项是本机 BigQuery 访问验证和真实扫描量记录。"
+}

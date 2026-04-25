@@ -1,0 +1,13 @@
+﻿{
+  "label": "measured_power_util",
+  "dataset_dir": "data/processed/v1",
+  "output_dir": "reports/benchmarks/v1",
+  "models": [
+    "persistence",
+    "moving_average",
+    "linear_regression",
+    "ridge",
+    "cpu_heuristic",
+    "random_forest"
+  ]
+}

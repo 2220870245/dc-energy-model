@@ -1,0 +1,36 @@
+# OS / editor noise
+Thumbs.db
+.DS_Store
+
+# Python cache / environments
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# Local environment files
+.env
+.env.*
+
+# Training data and generated datasets
+data/raw/
+data/processed/
+
+# Local runtime / experiment artifacts
+*.log
+*.tmp
+*.bak
+
+# Trellis runtime files are already scoped in .trellis/.gitignore,
+# but keeping these explicit at repo root makes first-time setup safer.
+.trellis/.developer
+.trellis/.current-task
+.trellis/.ralph-state.json
+.trellis/.plan-log
+.trellis/.agent-log
+.trellis/.session-id

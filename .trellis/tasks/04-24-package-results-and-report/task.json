@@ -1,0 +1,39 @@
+﻿{
+  "id": "package-results-and-report",
+  "name": "package-results-and-report",
+  "title": "固化复现流程并输出报告材料",
+  "description": "整理训练、评估、推理和报告材料，形成可复现、可展示的项目输出。",
+  "status": "planning",
+  "dev_type": "docs",
+  "scope": "energy-model",
+  "priority": "P1",
+  "creator": "project-owner",
+  "assignee": "project-owner",
+  "createdAt": "2026-04-24",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "current_phase": 0,
+  "next_action": [
+    { "phase": 1, "action": "freeze-reproducible-entrypoints" },
+    { "phase": 2, "action": "publish-evaluation-artifacts" },
+    { "phase": 3, "action": "compile-report-and-limitations" }
+  ],
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [
+    { "name": "整理训练与推理入口脚本", "status": "pending" },
+    { "name": "固化配置、日志和结果目录结构", "status": "pending" },
+    { "name": "输出图表、结论和局限性分析", "status": "pending" },
+    { "name": "形成可复现的运行说明", "status": "pending" }
+  ],
+  "relatedFiles": [
+    ".trellis/tasks/04-24-package-results-and-report/prd.md",
+    "reports/",
+    "configs/",
+    "scripts/",
+    "README.md"
+  ],
+  "notes": "如果结果不能复现或无法清楚解释，就不算项目完成。"
+}

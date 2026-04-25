@@ -1,0 +1,41 @@
+﻿{
+  "id": "train-baselines",
+  "name": "train-baselines",
+  "title": "建立基线模型并完成第一轮实验验证",
+  "description": "实现持久性预测、线性模型、树模型和物理启发式基线，形成第一轮结果对照。",
+  "status": "in_progress",
+  "dev_type": "backend",
+  "scope": "energy-model",
+  "priority": "P1",
+  "creator": "project-owner",
+  "assignee": "project-owner",
+  "createdAt": "2026-04-24",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "current_phase": 1,
+  "next_action": [
+    { "phase": 1, "action": "implement-naive-and-linear-baselines" },
+    { "phase": 2, "action": "train-tree-and-heuristic-baselines" },
+    { "phase": 3, "action": "publish-baseline-benchmark" }
+  ],
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [
+    { "name": "实现持久性预测与滑动平均基线", "status": "completed" },
+    { "name": "实现线性回归与正则化回归基线", "status": "completed" },
+    { "name": "实现树模型和物理启发式基线", "status": "completed" },
+    { "name": "输出统一 benchmark 结果表", "status": "in_progress" }
+  ],
+  "relatedFiles": [
+    ".trellis/tasks/04-24-train-baselines/prd.md",
+    "src/models/baselines.py",
+    "src/evaluation/metrics.py",
+    "src/training/train_baselines.py",
+    "src/training/README.md",
+    "configs/baselines/default.json",
+    "reports/benchmarks/"
+  ],
+  "notes": "Baseline 训练和 benchmark 输出骨架已落地。当前仍依赖 data/processed/v1 中的真实数据集来完成 Gate 1 与 Gate 2。"
+}

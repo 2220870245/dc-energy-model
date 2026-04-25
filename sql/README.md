@@ -1,0 +1,35 @@
+﻿# SQL Extraction Workflow
+
+This directory contains the first-pass BigQuery SQL templates for the Google cluster-data energy modeling project.
+
+## Execution Order
+
+1. `extraction/01_sample_power_trace.sql`
+2. `extraction/02_machine_to_pdu_mapping.sql`
+3. `extraction/03_instance_usage_join_pdu.sql`
+4. `extraction/04_build_pdu_cpu_power_5min.sql`
+5. `extraction/05_export_pdu_training_table.sql`
+6. `validation/01_validate_power_range.sql`
+7. `validation/02_validate_join_coverage.sql`
+8. `validation/03_validate_multi_pdu_export_scope.sql`
+
+## Notes
+
+- These queries are based on the public examples from Google's `power_trace_analysis_colab.ipynb`.
+- They are written as parameterized BigQuery scripts using `DECLARE` and `EXECUTE IMMEDIATE`.
+- Before full-scale execution, run them on one cell, one PDU, and a short time range.
+- Replace output table names and destination datasets to match your GCP project.
+- `05_export_pdu_training_table.sql` is aligned with `src/data/dataset_contract.py`.
+- Run `validation/03_validate_multi_pdu_export_scope.sql` before exporting a multi-PDU CSV.
+
+## Live Validation Status
+
+Template status:
+- Query templates created
+- Directory structure created
+- Validation SQL created
+
+Pending:
+- BigQuery authentication on the local machine
+- Scan-cost recording
+- Export verification with Parquet outputs

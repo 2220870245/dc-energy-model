@@ -1,0 +1,41 @@
+﻿{
+  "id": "train-deep-models",
+  "name": "train-deep-models",
+  "title": "实现深度学习主模型与阶段性对比实验",
+  "description": "基于固定数据集和 baseline 结果，实现 LSTM 与 Transformer 类时序模型，并完成分阶段对比。",
+  "status": "in_progress",
+  "dev_type": "backend",
+  "scope": "energy-model",
+  "priority": "P1",
+  "creator": "project-owner",
+  "assignee": "project-owner",
+  "createdAt": "2026-04-24",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "current_phase": 1,
+  "next_action": [
+    { "phase": 1, "action": "implement-lstm-pipeline" },
+    { "phase": 2, "action": "implement-transformer-pipeline" },
+    { "phase": 3, "action": "run-ablation-and-comparison" }
+  ],
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [
+    { "name": "实现时序窗口 dataset 与 dataloader", "status": "completed" },
+    { "name": "实现 LSTM 或 GRU 模型训练流程", "status": "completed" },
+    { "name": "实现 Transformer 或 TCN 模型训练流程", "status": "completed" },
+    { "name": "完成主模型与 baseline 的对比实验", "status": "in_progress" }
+  ],
+  "relatedFiles": [
+    ".trellis/tasks/04-24-train-deep-models/prd.md",
+    "src/data/sequence_dataset.py",
+    "src/models/sequence_models.py",
+    "src/training/train_deep_models.py",
+    "src/training/README.md",
+    "configs/deep-learning/default.json",
+    "reports/"
+  ],
+  "notes": "PyTorch 训练骨架、序列数据集和 LSTM/Transformer 模型定义已落地。当前仍依赖 processed 数据集与 baseline 结果来完成真实训练和公平对比。"
+}
