@@ -81,3 +81,4 @@ Found a new "didn't think of that" moment? Add it to the relevant guide.
 ## Energy Model Project Guides
 - `energy-model-scope.md` - Frozen scope, labels, sample grain, metrics, and non-goals for the data center energy model project
 - `bigquery-access-checklist.md` - BigQuery access checks, cost controls, and export rules for the project
+- `document-language-guidelines.md` - 描述性文件统一使用中文、统一采用 UTF-8 编码的写作规范

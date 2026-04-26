@@ -79,8 +79,8 @@ def init_developer(name: str, repo_root: Path | None = None) -> bool:
         today = datetime.now().strftime("%Y-%m-%d")
         journal_content = f"""# Journal - {name} (Part 1)
 
-> AI development session journal
-> Started: {today}
+> AI 开发会话日志
+> 开始于：{today}
 
 ---
 
@@ -94,46 +94,46 @@ def init_developer(name: str, repo_root: Path | None = None) -> bool:
     # Create index.md with markers for auto-update
     index_file = workspace_dir / "index.md"
     if not index_file.exists():
-        index_content = f"""# Workspace Index - {name}
+        index_content = f"""# 工作区索引 - {name}
 
-> Journal tracking for AI development sessions.
+> AI 开发会话日志索引。
 
 ---
 
-## Current Status
+## 当前状态
 
 <!-- @@@auto:current-status -->
-- **Active File**: `journal-1.md`
-- **Total Sessions**: 0
-- **Last Active**: -
+- **当前文件**: `journal-1.md`
+- **总会话数**: 0
+- **最后活跃**: -
 <!-- @@@/auto:current-status -->
 
 ---
 
-## Active Documents
+## 当前文档
 
 <!-- @@@auto:active-documents -->
-| File | Lines | Status |
-|------|-------|--------|
-| `journal-1.md` | ~0 | Active |
+| 文件 | 行数 | 状态 |
+|------|------|------|
+| `journal-1.md` | ~0 | 当前 |
 <!-- @@@/auto:active-documents -->
 
 ---
 
-## Session History
+## 会话历史
 
 <!-- @@@auto:session-history -->
-| # | Date | Title | Commits |
-|---|------|-------|---------|
+| # | 日期 | 标题 | 提交 |
+|---|------|------|------|
 <!-- @@@/auto:session-history -->
 
 ---
 
-## Notes
+## 备注
 
-- Sessions are appended to journal files
-- New journal file created when current exceeds 2000 lines
-- Use `add_session.py` to record sessions
+- 会话会持续追加到 journal 文件中
+- 当前 journal 超过 2000 行时会自动新建文件
+- 使用 `add_session.py` 记录会话
 """
         try:
             index_file.write_text(index_content, encoding="utf-8")

@@ -65,7 +65,7 @@ def get_current_session(index_file: Path) -> int:
 
     content = index_file.read_text(encoding="utf-8")
     for line in content.splitlines():
-        if "Total Sessions" in line:
+        if "Total Sessions" in line or "总会话数" in line:
             match = re.search(r":\s*(\d+)", line)
             if match:
                 return int(match.group(1))
@@ -92,7 +92,7 @@ def count_journal_files(dev_dir: Path, active_num: int) -> str:
     for f in files:
         filename = f.name
         lines = len(f.read_text(encoding="utf-8").splitlines())
-        status = "Active" if filename == active_file else "Archived"
+        status = "当前" if filename == active_file else "归档"
         result_lines.append(f"| `{filename}` | ~{lines} | {status} |")
 
     return "\n".join(result_lines)
@@ -107,8 +107,8 @@ def create_new_journal_file(
 
     content = f"""# Journal - {developer} (Part {num})
 
-> Continuation from `{FILE_JOURNAL_PREFIX}{prev_num}.md` (archived at ~{max_lines} lines)
-> Started: {today}
+> 续接自 `{FILE_JOURNAL_PREFIX}{prev_num}.md`（约 {max_lines} 行后归档）
+> 开始于：{today}
 
 ---
 
@@ -127,44 +127,44 @@ def generate_session_content(
 ) -> str:
     """Generate session content."""
     if commit and commit != "-":
-        commit_table = """| Hash | Message |
-|------|---------|"""
+        commit_table = """| 哈希 | 说明 |
+|------|------|"""
         for c in commit.split(","):
             c = c.strip()
-            commit_table += f"\n| `{c}` | (see git log) |"
+            commit_table += f"\n| `{c}` | （见 git log） |"
     else:
-        commit_table = "(No commits - planning session)"
+        commit_table = "（无提交，本次为规划记录）"
 
     return f"""
 
 ## Session {session_num}: {title}
 
-**Date**: {today}
-**Task**: {title}
+**日期**: {today}
+**任务**: {title}
 
-### Summary
+### 摘要
 
 {summary}
 
-### Main Changes
+### 主要变更
 
 {extra_content}
 
-### Git Commits
+### Git 提交
 
 {commit_table}
 
-### Testing
+### 验证
 
-- [OK] (Add test results)
+- [OK] （补充测试结果）
 
-### Status
+### 状态
 
-[OK] **Completed**
+[OK] **已完成**
 
-### Next Steps
+### 后续
 
-- None - task complete
+- 无，当前任务已完成
 """
 
 
@@ -188,16 +188,16 @@ def update_index(
     active_num = int(match.group(1)) if match else 0
     files_table = count_journal_files(dev_dir, active_num)
 
-    print(f"Updating index.md for session {new_session}...")
-    print(f"  Title: {title}")
-    print(f"  Commit: {commit_display}")
-    print(f"  Active File: {active_file}")
+    print(f"正在更新 index.md，写入会话 {new_session} ...")
+    print(f"  标题: {title}")
+    print(f"  提交: {commit_display}")
+    print(f"  当前文件: {active_file}")
     print()
 
     content = index_file.read_text(encoding="utf-8")
 
     if "@@@auto:current-status" not in content:
-        print("Error: Markers not found in index.md. Please ensure markers exist.", file=sys.stderr)
+        print("Error: 未在 index.md 中找到自动标记，请确认文件模板完整。", file=sys.stderr)
         return False
 
     # Process sections
@@ -213,9 +213,9 @@ def update_index(
         if "@@@auto:current-status" in line:
             new_lines.append(line)
             in_current_status = True
-            new_lines.append(f"- **Active File**: `{active_file}`")
-            new_lines.append(f"- **Total Sessions**: {new_session}")
-            new_lines.append(f"- **Last Active**: {today}")
+            new_lines.append(f"- **当前文件**: `{active_file}`")
+            new_lines.append(f"- **总会话数**: {new_session}")
+            new_lines.append(f"- **最后活跃**: {today}")
             continue
 
         if "@@@/auto:current-status" in line:
@@ -226,8 +226,8 @@ def update_index(
         if "@@@auto:active-documents" in line:
             new_lines.append(line)
             in_active_documents = True
-            new_lines.append("| File | Lines | Status |")
-            new_lines.append("|------|-------|--------|")
+            new_lines.append("| 文件 | 行数 | 状态 |")
+            new_lines.append("|------|------|------|")
             new_lines.append(files_table)
             continue
 
@@ -263,7 +263,7 @@ def update_index(
         new_lines.append(line)
 
     index_file.write_text("\n".join(new_lines), encoding="utf-8")
-    print("[OK] Updated index.md successfully!")
+    print("[OK] 已成功更新 index.md！")
     return True
 
 
@@ -285,7 +285,7 @@ def _auto_commit_workspace(repo_root: Path) -> None:
         cwd=repo_root,
     )
     if result.returncode == 0:
-        print("[OK] No workspace changes to commit.", file=sys.stderr)
+        print("[OK] 没有需要自动提交的工作区变更。", file=sys.stderr)
         return
     commit_result = subprocess.run(
         ["git", "commit", "-m", commit_msg],
@@ -294,9 +294,9 @@ def _auto_commit_workspace(repo_root: Path) -> None:
         text=True,
     )
     if commit_result.returncode == 0:
-        print(f"[OK] Auto-committed: {commit_msg}", file=sys.stderr)
+        print(f"[OK] 已自动提交: {commit_msg}", file=sys.stderr)
     else:
-        print(f"[WARN] Auto-commit failed: {commit_result.stderr.strip()}", file=sys.stderr)
+        print(f"[WARN] 自动提交失败: {commit_result.stderr.strip()}", file=sys.stderr)
 
 
 def add_session(

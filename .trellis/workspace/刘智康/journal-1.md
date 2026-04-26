@@ -1,7 +1,7 @@
 # Journal - 刘智康 (Part 1)
 
-> AI development session journal
-> Started: 2026-04-24
+> AI 开发会话日志
+> 开始于：2026-04-24
 
 ---
 
@@ -12,11 +12,11 @@
 **Date**: 2026-04-24
 **Task**: Cluster-Data Energy Modeling Setup
 
-### Summary
+### 摘要
 
 Completed Trellis task breakdown, project guideline consolidation, SQL and training scaffold setup, and preparation of the `dc-energy` runtime environment.
 
-### Main Changes
+### 主要变更
 
 - Created a Trellis master roadmap task for the data center energy modeling project and split it into six executable subtasks with validation gates.
 - Moved project-level scope and BigQuery access rules into `.trellis/spec/guides/energy-model-scope.md` and `.trellis/spec/guides/bigquery-access-checklist.md`.
@@ -54,11 +54,11 @@ Completed Trellis task breakdown, project guideline consolidation, SQL and train
 **Date**: 2026-04-25
 **Task**: BigQuery Access, Multi-PDU Dataset Build, and Baseline Benchmark
 
-### Summary
+### 摘要
 
 Completed the first live BigQuery data-access pass, exported a contract-aligned multi-PDU sample dataset, built the first processed dataset version, and ran the baseline benchmark end to end.
 
-### Main Changes
+### 主要变更
 
 - Logged into Google Cloud CLI, configured proxy access, set an active project, and verified BigQuery connectivity from the local machine.
 - Validated public Google cluster-data datasets and confirmed access to `clusterdata_2019_*`, `powerdata_2019`, and `machine_to_pdu_mapping`.
@@ -227,24 +227,24 @@ Completed the full deep-model optimization pass, extended the dataset beyond the
 
 ## Session 4: model-v2-flex-last-mean 备份与灵活性增强
 
-**Date**: 2026-04-26
-**Task**: model-v2-flex-last-mean 备份与灵活性增强
+**日期**: 2026-04-26
+**任务**: model-v2-flex-last-mean 备份与灵活性增强
 
-### Summary
+### 摘要
 
 完成当前主版本模型代码、灵活性特征链路、跨 cell 验证与汇报材料的阶段性收口，并以版本名提交到 Git。
 
-### Main Changes
+### 主要变更
 
-| Feature | Description |
-|---------|-------------|
-| ????? | ?? `model-v2-flex-last-mean` ????????????? PDU ??????? |
-| ???? | ?? `last_mean` ????????? LSTM ?????? repeated-run ???????? |
-| ????? | ???????????? SQL?????????? join ??? |
-| ???? | ?? `cell=f`?`cell=e`?`cell=b` ?? holdout ?????????? summary/metrics? |
-| ???? | ??????????????????????????? |
+| 项目 | 说明 |
+|------|------|
+| 主版本模型 | 固化 `model-v2-flex-last-mean` 配置与训练入口，当前以未见 PDU 泛化为主目标。 |
+| 结构优化 | 增加 `last_mean` 序列汇聚，保留残差 LSTM 主线，并补充 repeated-run 稳定性评估脚本。 |
+| 灵活性链路 | 新增任务级与窗口级灵活性 SQL、窗口数据打包与特征 join 脚本。 |
+| 外部验证 | 完成 `cell=f`、`cell=e`、`cell=b` 三轮 holdout 结果整理，并保留关键 summary 与 metrics。 |
+| 论文材料 | 同步整理项目进度报告、最终总报告、导师摘要与展示提纲。 |
 
-**Updated Files**:
+**更新文件**:
 - `src/models/sequence_models.py`
 - `src/training/train_deep_models.py`
 - `src/training/run_holdout_stability.py`
@@ -257,20 +257,20 @@ Completed the full deep-model optimization pass, extended the dataset beyond the
 - `reports/comparisons/flex_feature_model_update_2026-04-26.md`
 
 
-### Git Commits
+### Git 提交
 
-| Hash | Message |
-|------|---------|
-| `e8ead58` | (see git log) |
+| 哈希 | 说明 |
+|------|------|
+| `e8ead58` | （见 git log） |
 
-### Testing
+### 验证
 
-- [OK] (Add test results)
+- [OK] （补充测试结果）
 
-### Status
+### 状态
 
-[OK] **Completed**
+[OK] **已完成**
 
-### Next Steps
+### 后续
 
-- None - task complete
+- 无，当前任务已完成
