@@ -223,3 +223,54 @@ Completed the full deep-model optimization pass, extended the dataset beyond the
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: model-v2-flex-last-mean 备份与灵活性增强
+
+**Date**: 2026-04-26
+**Task**: model-v2-flex-last-mean 备份与灵活性增强
+
+### Summary
+
+完成当前主版本模型代码、灵活性特征链路、跨 cell 验证与汇报材料的阶段性收口，并以版本名提交到 Git。
+
+### Main Changes
+
+| Feature | Description |
+|---------|-------------|
+| ????? | ?? `model-v2-flex-last-mean` ????????????? PDU ??????? |
+| ???? | ?? `last_mean` ????????? LSTM ?????? repeated-run ???????? |
+| ????? | ???????????? SQL?????????? join ??? |
+| ???? | ?? `cell=f`?`cell=e`?`cell=b` ?? holdout ?????????? summary/metrics? |
+| ???? | ??????????????????????????? |
+
+**Updated Files**:
+- `src/models/sequence_models.py`
+- `src/training/train_deep_models.py`
+- `src/training/run_holdout_stability.py`
+- `src/flexibility/build_flexibility_windows.py`
+- `src/flexibility/build_flexibility_dataset.py`
+- `src/flexibility/join_flex_features.py`
+- `sql/extraction/08_export_task_flexibility_trace.sql`
+- `sql/extraction/09_export_flexibility_window_table.sql`
+- `configs/deep-learning/lstm-residual-v2-flex-last-mean.json`
+- `reports/comparisons/flex_feature_model_update_2026-04-26.md`
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e8ead58` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
