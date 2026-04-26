@@ -15,8 +15,12 @@ class LSTMRegressor(nn.Module):
         hidden_size: int = 64,
         num_layers: int = 2,
         dropout: float = 0.1,
+        pooling: str = "last",
     ) -> None:
         super().__init__()
+        if pooling not in {"last", "mean", "last_mean"}:
+            raise ValueError(f"Unsupported pooling mode: {pooling}")
+        self.pooling = pooling
         lstm_dropout = dropout if num_layers > 1 else 0.0
         self.encoder = nn.LSTM(
             input_size=input_size,
@@ -25,16 +29,18 @@ class LSTMRegressor(nn.Module):
             dropout=lstm_dropout,
             batch_first=True,
         )
+        pooled_size = hidden_size * 2 if pooling == "last_mean" else hidden_size
         self.head = nn.Sequential(
-            nn.LayerNorm(hidden_size),
-            nn.Linear(hidden_size, hidden_size),
+            nn.LayerNorm(pooled_size),
+            nn.Linear(pooled_size, hidden_size),
             nn.ReLU(),
             nn.Linear(hidden_size, 1),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         encoded, _ = self.encoder(x)
-        return self.head(encoded[:, -1, :])
+        pooled = pool_sequence(encoded, self.pooling)
+        return self.head(pooled)
 
 
 class PositionalEncoding(nn.Module):
@@ -61,8 +67,12 @@ class TransformerRegressor(nn.Module):
         nhead: int = 4,
         num_layers: int = 2,
         dropout: float = 0.1,
+        pooling: str = "last",
     ) -> None:
         super().__init__()
+        if pooling not in {"last", "mean", "last_mean"}:
+            raise ValueError(f"Unsupported pooling mode: {pooling}")
+        self.pooling = pooling
         self.input_proj = nn.Linear(input_size, d_model)
         self.positional = PositionalEncoding(d_model=d_model)
         encoder_layer = nn.TransformerEncoderLayer(
@@ -74,9 +84,10 @@ class TransformerRegressor(nn.Module):
             norm_first=True,
         )
         self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+        pooled_size = d_model * 2 if pooling == "last_mean" else d_model
         self.head = nn.Sequential(
-            nn.LayerNorm(d_model),
-            nn.Linear(d_model, d_model),
+            nn.LayerNorm(pooled_size),
+            nn.Linear(pooled_size, d_model),
             nn.GELU(),
             nn.Linear(d_model, 1),
         )
@@ -84,7 +95,20 @@ class TransformerRegressor(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         projected = self.input_proj(x)
         encoded = self.encoder(self.positional(projected))
-        return self.head(encoded[:, -1, :])
+        pooled = pool_sequence(encoded, self.pooling)
+        return self.head(pooled)
+
+
+def pool_sequence(encoded: torch.Tensor, pooling: str) -> torch.Tensor:
+    if pooling == "last":
+        return encoded[:, -1, :]
+    if pooling == "mean":
+        return encoded.mean(dim=1)
+    if pooling == "last_mean":
+        return torch.cat([encoded[:, -1, :], encoded.mean(dim=1)], dim=-1)
+    raise ValueError(f"Unsupported pooling mode: {pooling}")
+
+
 def build_sequence_model(
     model_name: str,
     input_size: int,
@@ -92,6 +116,7 @@ def build_sequence_model(
     num_layers: int = 2,
     dropout: float = 0.1,
     nhead: int = 4,
+    pooling: str = "last",
 ) -> nn.Module:
     if model_name == "lstm":
         return LSTMRegressor(
@@ -99,6 +124,7 @@ def build_sequence_model(
             hidden_size=hidden_size,
             num_layers=num_layers,
             dropout=dropout,
+            pooling=pooling,
         )
     if model_name == "transformer":
         if hidden_size % nhead != 0:
@@ -109,5 +135,6 @@ def build_sequence_model(
             nhead=nhead,
             num_layers=num_layers,
             dropout=dropout,
+            pooling=pooling,
         )
     raise ValueError(f"Unknown sequence model: {model_name}")

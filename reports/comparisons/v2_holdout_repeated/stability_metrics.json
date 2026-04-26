@@ -1,0 +1,257 @@
+{
+  "train_config": "configs\\deep-learning\\lstm-residual-v2-best.json",
+  "holdout_path": "data\\processed\\v2_holdout_pdu\\full.parquet",
+  "python_executable": "C:\\Users\\22208\\anaconda3\\envs\\dc-energy\\python.exe",
+  "seeds": [
+    42,
+    7,
+    21
+  ],
+  "baseline_models": [
+    "random_forest"
+  ],
+  "deep_model": "lstm",
+  "deep_runs": [
+    {
+      "seed": 42,
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated\\deep-models\\seed42\\lstm_best.pt",
+      "best_epoch": 19,
+      "test_metrics": {
+        "mae": 0.0021204082295298576,
+        "rmse": 0.0027021152175776154,
+        "mape": 0.0033648801036179066,
+        "smape": 0.0033654978033155203,
+        "r2": 0.99590703404911
+      },
+      "holdout_metrics": {
+        "mae": 0.003698076121509075,
+        "rmse": 0.005011821217281058,
+        "mape": 0.005542673170566559,
+        "smape": 0.005524605978280306,
+        "r2": 0.9886599759530615
+      }
+    },
+    {
+      "seed": 7,
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated\\deep-models\\seed7\\lstm_best.pt",
+      "best_epoch": 18,
+      "test_metrics": {
+        "mae": 0.002178848022595048,
+        "rmse": 0.0027765283940329143,
+        "mape": 0.003452292177826166,
+        "smape": 0.003454111749306321,
+        "r2": 0.9956784989711851
+      },
+      "holdout_metrics": {
+        "mae": 0.004018121864646673,
+        "rmse": 0.005291116777471764,
+        "mape": 0.006004054564982653,
+        "smape": 0.005981546826660633,
+        "r2": 0.9873608598615325
+      }
+    },
+    {
+      "seed": 21,
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated\\deep-models\\seed21\\lstm_best.pt",
+      "best_epoch": 10,
+      "test_metrics": {
+        "mae": 0.002092565642669797,
+        "rmse": 0.0026841217426565337,
+        "mape": 0.0033188003581017256,
+        "smape": 0.0033194483257830143,
+        "r2": 0.9959613631150217
+      },
+      "holdout_metrics": {
+        "mae": 0.00341459596529603,
+        "rmse": 0.004752935410828355,
+        "mape": 0.005125357303768396,
+        "smape": 0.005110630299896002,
+        "r2": 0.9898012562335909
+      }
+    }
+  ],
+  "baseline_runs": [
+    {
+      "model": "random_forest",
+      "random_seed": 42,
+      "features": [
+        "instance_count",
+        "collection_count",
+        "machine_count",
+        "total_cpu_usage",
+        "avg_cpu_usage",
+        "max_cpu_usage",
+        "hour",
+        "day_of_week",
+        "is_weekend",
+        "prev_measured_power_util",
+        "prev_total_cpu_usage"
+      ],
+      "val": {
+        "mae": 0.00488542241044557,
+        "rmse": 0.008204443790790637,
+        "mape": 0.007922400365228087,
+        "smape": 0.007848031683795097,
+        "r2": 0.9635579323477177
+      },
+      "test": {
+        "mae": 0.005244745450727983,
+        "rmse": 0.008794527925699442,
+        "mape": 0.008703740397200309,
+        "smape": 0.00859813040075833,
+        "r2": 0.956643376358224
+      },
+      "holdout": {
+        "mae": 0.006086088313678801,
+        "rmse": 0.008717445055781486,
+        "mape": 0.009391762355624118,
+        "smape": 0.009314732445002203,
+        "r2": 0.9658479824650014
+      },
+      "seed": 42
+    },
+    {
+      "model": "random_forest",
+      "random_seed": 7,
+      "features": [
+        "instance_count",
+        "collection_count",
+        "machine_count",
+        "total_cpu_usage",
+        "avg_cpu_usage",
+        "max_cpu_usage",
+        "hour",
+        "day_of_week",
+        "is_weekend",
+        "prev_measured_power_util",
+        "prev_total_cpu_usage"
+      ],
+      "val": {
+        "mae": 0.004911842457851745,
+        "rmse": 0.008321996441514868,
+        "mape": 0.007964519555350548,
+        "smape": 0.007887860836335948,
+        "r2": 0.9625061727931542
+      },
+      "test": {
+        "mae": 0.0052612627809632325,
+        "rmse": 0.008869052214238626,
+        "mape": 0.008731891764101935,
+        "smape": 0.00862459971036747,
+        "r2": 0.9559054602994427
+      },
+      "holdout": {
+        "mae": 0.006113373283989299,
+        "rmse": 0.008847880763027588,
+        "mape": 0.009468128885708589,
+        "smape": 0.009386992995370734,
+        "r2": 0.9648183300689042
+      },
+      "seed": 7
+    },
+    {
+      "model": "random_forest",
+      "random_seed": 21,
+      "features": [
+        "instance_count",
+        "collection_count",
+        "machine_count",
+        "total_cpu_usage",
+        "avg_cpu_usage",
+        "max_cpu_usage",
+        "hour",
+        "day_of_week",
+        "is_weekend",
+        "prev_measured_power_util",
+        "prev_total_cpu_usage"
+      ],
+      "val": {
+        "mae": 0.004910177696142976,
+        "rmse": 0.008169665936393948,
+        "mape": 0.00796180417619511,
+        "smape": 0.007888462544653856,
+        "r2": 0.9638662264405411
+      },
+      "test": {
+        "mae": 0.005429394976597199,
+        "rmse": 0.008998566304353008,
+        "mape": 0.009012053414641565,
+        "smape": 0.00890145892106955,
+        "r2": 0.9546082389717253
+      },
+      "holdout": {
+        "mae": 0.005983736999024029,
+        "rmse": 0.008620467316892548,
+        "mape": 0.009257797116611052,
+        "smape": 0.009182141483411963,
+        "r2": 0.966603608276903
+      },
+      "seed": 21
+    }
+  ],
+  "deep_test_summary": {
+    "mae": {
+      "mean": 0.0021306072982649007,
+      "std": 3.5955324350161195e-05
+    },
+    "rmse": {
+      "mean": 0.0027209217847556874,
+      "std": 4.000010442833448e-05
+    },
+    "r2": {
+      "mean": 0.995848965378439,
+      "std": 0.00012256157323900496
+    }
+  },
+  "deep_holdout_summary": {
+    "mae": {
+      "mean": 0.0037102646504839263,
+      "std": 0.0002465391084266061
+    },
+    "rmse": {
+      "mean": 0.005018624468527059,
+      "std": 0.00021976428132763703
+    },
+    "r2": {
+      "mean": 0.9886073640160618,
+      "std": 0.0009969819875086687
+    }
+  },
+  "baseline_summaries": {
+    "random_forest": {
+      "test": {
+        "mae": {
+          "mean": 0.005311801069429471,
+          "std": 8.342442009289651e-05
+        },
+        "rmse": {
+          "mean": 0.008887382148097025,
+          "std": 8.430067159611439e-05
+        },
+        "r2": {
+          "mean": 0.9557190252097975,
+          "std": 0.0008412350355160479
+        }
+      },
+      "holdout": {
+        "mae": {
+          "mean": 0.006061066198897377,
+          "std": 5.580305407412901e-05
+        },
+        "rmse": {
+          "mean": 0.008728597711900541,
+          "std": 9.31754802317865e-05
+        },
+        "r2": {
+          "mean": 0.9657566402702695,
+          "std": 0.0007316930674322696
+        }
+      }
+    }
+  },
+  "winner_counts_vs_random_forest": {
+    "mae": 3,
+    "rmse": 3,
+    "r2": 3
+  }
+}

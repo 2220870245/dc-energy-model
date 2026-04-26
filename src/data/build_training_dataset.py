@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from dataset_contract import BASE_FEATURE_COLUMNS, REQUIRED_COLUMNS, SplitConfig
@@ -50,12 +52,34 @@ def build_features(frame: pd.DataFrame, label_column: str) -> pd.DataFrame:
     built["hour"] = built["window_start"].dt.hour
     built["day_of_week"] = built["window_start"].dt.dayofweek
     built["is_weekend"] = built["day_of_week"].isin([5, 6]).astype(int)
+    minute_of_day = built["window_start"].dt.hour * 60 + built["window_start"].dt.minute
+    built["hour_sin"] = np.sin(2.0 * math.pi * minute_of_day / 1440.0)
+    built["hour_cos"] = np.cos(2.0 * math.pi * minute_of_day / 1440.0)
+    built["day_of_week_sin"] = np.sin(2.0 * math.pi * built["day_of_week"] / 7.0)
+    built["day_of_week_cos"] = np.cos(2.0 * math.pi * built["day_of_week"] / 7.0)
     built["prev_measured_power_util"] = built.groupby(["cell", "pdu"])[label_column].shift(1)
+    built["prev_production_power_util"] = built.groupby(["cell", "pdu"])["production_power_util"].shift(1)
     built["prev_total_cpu_usage"] = built.groupby(["cell", "pdu"])["total_cpu_usage"].shift(1)
+    built["delta_total_cpu_usage"] = built["total_cpu_usage"] - built["prev_total_cpu_usage"]
+
+    machine_count = built["machine_count"].replace(0, np.nan)
+    instance_count = built["instance_count"].replace(0, np.nan)
+    built["cpu_per_machine"] = built["total_cpu_usage"] / machine_count
+    built["cpu_per_instance"] = built["total_cpu_usage"] / instance_count
+    built["cpu_spread"] = built["max_cpu_usage"] - built["avg_cpu_usage"]
 
     numeric_fill_columns = list(BASE_FEATURE_COLUMNS) + [
         "prev_measured_power_util",
+        "prev_production_power_util",
         "prev_total_cpu_usage",
+        "delta_total_cpu_usage",
+        "cpu_per_machine",
+        "cpu_per_instance",
+        "cpu_spread",
+        "hour_sin",
+        "hour_cos",
+        "day_of_week_sin",
+        "day_of_week_cos",
     ]
     for column in numeric_fill_columns:
         if column in built.columns:
@@ -102,6 +126,7 @@ def write_report(report_path: Path, version: str, label_column: str, frame: pd.D
         f"- train rows: {len(train)}",
         f"- val rows: {len(val)}",
         f"- test rows: {len(test)}",
+        f"- column count: {len(frame.columns)}",
         "",
         "## Missing Rate By Column",
     ]
@@ -121,6 +146,7 @@ def write_full_report(report_path: Path, version: str, label_column: str, frame:
         f"- label min: {summary.min_label}",
         f"- label max: {summary.max_label}",
         f"- split mode: full_only",
+        f"- column count: {len(frame.columns)}",
         "",
         "## Missing Rate By Column",
     ]

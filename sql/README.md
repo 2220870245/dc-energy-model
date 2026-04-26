@@ -12,9 +12,11 @@ This directory contains the first-pass BigQuery SQL templates for the Google clu
 6. `validation/04_rank_pdu_candidates.sql`
 7. `extraction/06_export_expanded_pdu_training_table.sql`
 8. `extraction/07_export_holdout_pdu_training_table.sql`
-9. `validation/01_validate_power_range.sql`
-10. `validation/02_validate_join_coverage.sql`
-11. `validation/03_validate_multi_pdu_export_scope.sql`
+9. `extraction/08_export_task_flexibility_trace.sql`
+10. `extraction/09_export_flexibility_window_table.sql`
+11. `validation/01_validate_power_range.sql`
+12. `validation/02_validate_join_coverage.sql`
+13. `validation/03_validate_multi_pdu_export_scope.sql`
 
 ## Notes
 
@@ -28,6 +30,8 @@ This directory contains the first-pass BigQuery SQL templates for the Google clu
 - See `EXPANSION_PLAN.md` for the recommended staged expansion workflow.
 - `06_export_expanded_pdu_training_table.sql` is now prefilled with the current development PDU list.
 - `07_export_holdout_pdu_training_table.sql` is prefilled with the current unseen-PDU holdout list.
+- `08_export_task_flexibility_trace.sql` exports task-level scheduler metadata for flexibility modeling.
+- `09_export_flexibility_window_table.sql` exports window-level flexibility summaries directly from BigQuery.
 
 ## Live Validation Status
 

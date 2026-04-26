@@ -20,10 +20,10 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from data.sequence_dataset import (
-    DEFAULT_SEQUENCE_FEATURES,
     PDUPowerSequenceDataset,
     SequenceStandardizer,
     collect_sequence_targets,
+    get_sequence_feature_columns,
 )
 from evaluation.metrics import evaluate_regression
 from models.sequence_models import build_sequence_model
@@ -34,6 +34,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset-dir", required=True, help="Processed dataset directory")
     parser.add_argument("--output-dir", required=True, help="Output directory for checkpoints and reports")
     parser.add_argument("--model", choices=["lstm", "transformer"], default="lstm")
+    parser.add_argument(
+        "--feature-set",
+        choices=["legacy", "cyclic", "compact", "enhanced", "flex"],
+        default="enhanced",
+    )
     parser.add_argument("--label", default="measured_power_util")
     parser.add_argument("--target-mode", choices=["absolute", "residual"], default="absolute")
     parser.add_argument("--context-length", type=int, default=12)
@@ -54,6 +59,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-layers", type=int, default=2)
     parser.add_argument("--dropout", type=float, default=0.1)
     parser.add_argument("--nhead", type=int, default=4)
+    parser.add_argument("--pooling", choices=["last", "mean", "last_mean"], default="last")
     parser.add_argument("--grad-clip", type=float, default=1.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -199,7 +205,13 @@ def main() -> None:
     val_frame, _ = prepare_target_frame(raw_val_frame, args.label, args.target_mode)
     test_frame, _ = prepare_target_frame(raw_test_frame, args.label, args.target_mode)
 
-    feature_columns = list(DEFAULT_SEQUENCE_FEATURES)
+    feature_columns = get_sequence_feature_columns(args.feature_set)
+    missing_features = [column for column in feature_columns if column not in train_frame.columns]
+    if missing_features:
+        raise ValueError(
+            "Dataset is missing required feature columns for "
+            f"feature_set={args.feature_set}: {missing_features}"
+        )
     standardizer = SequenceStandardizer.fit(
         frame=train_frame,
         feature_columns=feature_columns,
@@ -249,6 +261,7 @@ def main() -> None:
         num_layers=args.num_layers,
         dropout=args.dropout,
         nhead=args.nhead,
+        pooling=args.pooling,
     ).to(device)
     optimizer = torch.optim.Adam(
         model.parameters(),
@@ -310,6 +323,7 @@ def main() -> None:
             torch.save(
                 {
                     "model": args.model,
+                    "feature_set": args.feature_set,
                     "state_dict": model.state_dict(),
                     "feature_columns": feature_columns,
                     "context_length": args.context_length,
@@ -319,6 +333,7 @@ def main() -> None:
                     "num_layers": args.num_layers,
                     "dropout": args.dropout,
                     "nhead": args.nhead,
+                    "pooling": args.pooling,
                     "standardizer": {
                         "feature_mean": standardizer.feature_mean.tolist(),
                         "feature_std": standardizer.feature_std.tolist(),
@@ -371,6 +386,7 @@ def main() -> None:
     )
     results = {
         "model": args.model,
+        "feature_set": args.feature_set,
         "label": args.label,
         "target_mode": args.target_mode,
         "context_length": args.context_length,
@@ -392,6 +408,7 @@ def main() -> None:
         "num_layers": args.num_layers,
         "dropout": args.dropout,
         "nhead": args.nhead,
+        "pooling": args.pooling,
         "seed": args.seed,
         "feature_columns": feature_columns,
         "best_val_loss": best_val_loss,
@@ -413,6 +430,8 @@ def main() -> None:
         f"# Deep Model Summary: {args.model}",
         "",
         f"- target_mode: {args.target_mode}",
+        f"- feature_set: {args.feature_set}",
+        f"- pooling: {args.pooling}",
         f"- loss: {args.loss}",
         f"- target_scaling: {args.target_scaling}",
         f"- scheduler: {args.scheduler}",

@@ -75,6 +75,42 @@ This gives you:
 - a real unseen-PDU test
 - less distribution shock than cross-cell expansion
 
+## Cross-Cell Ranking Update (2026-04-26)
+
+After the `cell=f` development + holdout pass was exhausted, a wider candidate scan was run across:
+
+- time window: `1000-3000`
+- cells: `a, b, c, d, e, g, h`
+
+Strong candidates found:
+
+- `cell=a`: `pdu10`, `pdu7`, `pdu9`, `pdu8`, `pdu6`
+- `cell=b`: `pdu11`, `pdu12`, `pdu13`, `pdu14`, `pdu15`
+- `cell=c`: `pdu41`, `pdu43`, `pdu42`
+- `cell=d`: `pdu32`, `pdu36`, `pdu37`, `pdu35`, `pdu34`
+- `cell=e`: `pdu26`, `pdu27`, `pdu30`, `pdu31`, `pdu29`, `pdu28`
+- `cell=g`: `pdu2`, `pdu1`, `pdu5`
+- `cell=h`: `pdu51`, `pdu52`, `pdu55`, `pdu46`, `pdu47`, `pdu50`, `pdu53`, `pdu54`
+
+### Recommended Next Cross-Cell Target
+
+Use `cell=e` first.
+
+Reason:
+- it has `6` strong candidates
+- `5` of them have large window coverage (`1903+`)
+- it supports a cleaner split than `cell=h`, whose extra candidates are much shorter (`520`, `414`, `320`)
+
+Suggested split:
+
+- development PDUs: `pdu26`, `pdu27`, `pdu30`, `pdu31`
+- holdout PDUs: `pdu29`, `pdu28`
+- recommended window range: `1000-3000`
+
+Backup option:
+
+- if a larger development set is preferred over a balanced holdout split, use `pdu29` as development and keep `pdu28` as the only holdout PDU
+
 ## Output Expectation
 
 The expanded export should still match `src/data/dataset_contract.py`:

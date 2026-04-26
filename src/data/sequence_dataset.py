@@ -10,7 +10,7 @@ import torch
 from torch.utils.data import Dataset
 
 
-DEFAULT_SEQUENCE_FEATURES: tuple[str, ...] = (
+LEGACY_SEQUENCE_FEATURES: tuple[str, ...] = (
     "instance_count",
     "collection_count",
     "machine_count",
@@ -23,6 +23,75 @@ DEFAULT_SEQUENCE_FEATURES: tuple[str, ...] = (
     "prev_measured_power_util",
     "prev_total_cpu_usage",
 )
+
+CYCLIC_SEQUENCE_FEATURES: tuple[str, ...] = (
+    "instance_count",
+    "collection_count",
+    "machine_count",
+    "total_cpu_usage",
+    "avg_cpu_usage",
+    "max_cpu_usage",
+    "is_weekend",
+    "hour_sin",
+    "hour_cos",
+    "day_of_week_sin",
+    "day_of_week_cos",
+    "prev_measured_power_util",
+    "prev_total_cpu_usage",
+)
+
+COMPACT_SEQUENCE_FEATURES: tuple[str, ...] = (
+    *CYCLIC_SEQUENCE_FEATURES,
+    "prev_production_power_util",
+    "delta_total_cpu_usage",
+    "cpu_spread",
+)
+
+ENHANCED_SEQUENCE_FEATURES: tuple[str, ...] = (
+    *COMPACT_SEQUENCE_FEATURES,
+    "cpu_per_machine",
+    "cpu_per_instance",
+)
+
+FLEX_SEQUENCE_FEATURES: tuple[str, ...] = (
+    *LEGACY_SEQUENCE_FEATURES,
+    "task_count",
+    "job_count",
+    "online_cpu_usage",
+    "flex_cpu_usage",
+    "critical_cpu_usage",
+    "batch_candidate_cpu_usage",
+    "online_task_count",
+    "deferrable_task_count",
+    "critical_task_count",
+    "mean_deferrable_slack_us",
+    "max_dependency_count",
+    "mean_priority",
+    "mean_scheduling_class",
+    "flex_cpu_ratio",
+    "critical_cpu_ratio",
+    "online_cpu_ratio",
+)
+
+SEQUENCE_FEATURE_SETS: dict[str, tuple[str, ...]] = {
+    "legacy": LEGACY_SEQUENCE_FEATURES,
+    "cyclic": CYCLIC_SEQUENCE_FEATURES,
+    "compact": COMPACT_SEQUENCE_FEATURES,
+    "enhanced": ENHANCED_SEQUENCE_FEATURES,
+    "flex": FLEX_SEQUENCE_FEATURES,
+}
+
+DEFAULT_SEQUENCE_FEATURES: tuple[str, ...] = ENHANCED_SEQUENCE_FEATURES
+
+
+def get_sequence_feature_columns(feature_set: str = "enhanced") -> list[str]:
+    try:
+        return list(SEQUENCE_FEATURE_SETS[feature_set])
+    except KeyError as exc:
+        raise ValueError(
+            f"Unknown sequence feature set: {feature_set}. "
+            f"Expected one of {sorted(SEQUENCE_FEATURE_SETS)}."
+        ) from exc
 
 
 def _prepare_ordered_sequence_frame(

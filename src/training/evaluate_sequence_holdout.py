@@ -121,6 +121,7 @@ def main() -> None:
         num_layers=int(checkpoint.get("num_layers", 2)),
         dropout=float(checkpoint.get("dropout", 0.1)),
         nhead=int(checkpoint.get("nhead", 4)),
+        pooling=str(checkpoint.get("pooling", "last")),
     ).to(device)
     model.load_state_dict(checkpoint["state_dict"])
 

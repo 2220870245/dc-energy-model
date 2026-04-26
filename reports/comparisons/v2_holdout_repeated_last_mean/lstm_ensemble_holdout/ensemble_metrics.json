@@ -1,0 +1,78 @@
+{
+  "name": "v2_holdout_lstm_legacy_last_mean_ensemble",
+  "split": "holdout",
+  "member_count": 3,
+  "members": [
+    {
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated_last_mean\\deep-models\\seed42\\lstm_best.pt",
+      "model": "lstm",
+      "label": "measured_power_util",
+      "target_mode": "residual",
+      "context_length": 12,
+      "hidden_size": 96,
+      "num_layers": 1,
+      "dropout": 0.1,
+      "nhead": 4,
+      "pooling": "last_mean",
+      "metrics": {
+        "mae": 0.0030544190667569637,
+        "rmse": 0.004359839976125402,
+        "mape": 0.004596669692546129,
+        "smape": 0.0045881494879722595,
+        "r2": 0.9914184854895061
+      }
+    },
+    {
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated_last_mean\\deep-models\\seed7\\lstm_best.pt",
+      "model": "lstm",
+      "label": "measured_power_util",
+      "target_mode": "residual",
+      "context_length": 12,
+      "hidden_size": 96,
+      "num_layers": 1,
+      "dropout": 0.1,
+      "nhead": 4,
+      "pooling": "last_mean",
+      "metrics": {
+        "mae": 0.003101723501458764,
+        "rmse": 0.004444543875809025,
+        "mape": 0.004669115412980318,
+        "smape": 0.004659945145249367,
+        "r2": 0.9910817992989196
+      }
+    },
+    {
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated_last_mean\\deep-models\\seed21\\lstm_best.pt",
+      "model": "lstm",
+      "label": "measured_power_util",
+      "target_mode": "residual",
+      "context_length": 12,
+      "hidden_size": 96,
+      "num_layers": 1,
+      "dropout": 0.1,
+      "nhead": 4,
+      "pooling": "last_mean",
+      "metrics": {
+        "mae": 0.0031915847212076187,
+        "rmse": 0.00456150590415583,
+        "mape": 0.004821374546736479,
+        "smape": 0.004810885060578585,
+        "r2": 0.9906062427007217
+      }
+    }
+  ],
+  "member_metric_mean": {
+    "mae": 0.0031159090964744487,
+    "rmse": 0.004455296585363418,
+    "mape": 0.004695719884087642,
+    "smape": 0.00468632656460007,
+    "r2": 0.9910355091630492
+  },
+  "ensemble_metrics": {
+    "mae": 0.003095044055953622,
+    "rmse": 0.004427702083638693,
+    "mape": 0.004663912579417229,
+    "smape": 0.004654658026993275,
+    "r2": 0.9911492593351587
+  }
+}

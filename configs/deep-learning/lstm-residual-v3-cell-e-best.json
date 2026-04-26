@@ -1,0 +1,23 @@
+{
+  "dataset_dir": "data/processed/v3_cell_e_dev",
+  "output_dir": "reports/deep-models/v3_cell_e_dev_lstm_best",
+  "label": "measured_power_util",
+  "target_mode": "residual",
+  "context_length": 12,
+  "epochs": 80,
+  "patience": 12,
+  "min_epochs": 20,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "weight_decay": 0.001,
+  "loss": "mse",
+  "huber_delta": 1.0,
+  "target_scaling": "standard",
+  "hidden_size": 96,
+  "num_layers": 1,
+  "dropout": 0.1,
+  "nhead": 4,
+  "grad_clip": 1.0,
+  "seed": 42,
+  "model": "lstm"
+}

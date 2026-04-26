@@ -18,7 +18,7 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from data.sequence_dataset import (
-    DEFAULT_SEQUENCE_FEATURES,
+    LEGACY_SEQUENCE_FEATURES,
     PDUPowerSequenceDataset,
     SequenceStandardizer,
     collect_sequence_targets,
@@ -29,10 +29,11 @@ from models.sequence_models import build_sequence_model
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dataset-dir", required=True, help="Processed dataset directory")
+    parser.add_argument("--dataset-dir", help="Processed dataset directory")
+    parser.add_argument("--holdout-path", help="Path to a holdout parquet or csv file")
     parser.add_argument("--output-dir", required=True, help="Directory for ensemble reports")
     parser.add_argument("--checkpoint", action="append", required=True, help="Sequence-model checkpoint path")
-    parser.add_argument("--split", choices=["val", "test"], default="test")
+    parser.add_argument("--split", choices=["val", "test", "holdout"], default="test")
     parser.add_argument("--name", default="sequence_ensemble", help="Label for the ensemble report")
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     return parser.parse_args()
@@ -40,6 +41,14 @@ def parse_args() -> argparse.Namespace:
 
 def load_split(dataset_dir: Path, split_name: str) -> pd.DataFrame:
     return pd.read_parquet(dataset_dir / f"{split_name}.parquet")
+
+
+def load_frame(path: Path) -> pd.DataFrame:
+    if path.suffix.lower() == ".parquet":
+        return pd.read_parquet(path)
+    if path.suffix.lower() == ".csv":
+        return pd.read_csv(path)
+    raise ValueError(f"Unsupported input format: {path.suffix}")
 
 
 def prepare_target_frame(frame: pd.DataFrame, label_column: str, target_mode: str) -> tuple[pd.DataFrame, str]:
@@ -99,6 +108,7 @@ def member_summary(checkpoint_path: Path, payload: dict[str, object], metrics: d
         "num_layers": int(payload.get("num_layers", 2)),
         "dropout": float(payload.get("dropout", 0.1)),
         "nhead": int(payload.get("nhead", 4)),
+        "pooling": str(payload.get("pooling", "last")),
         "metrics": metrics,
     }
 
@@ -113,18 +123,27 @@ def mean_metrics(metric_list: list[dict[str, float]]) -> dict[str, float]:
 
 def main() -> None:
     args = parse_args()
-    dataset_dir = Path(args.dataset_dir)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    raw_train_frame = load_split(dataset_dir, "train")
-    raw_val_frame = load_split(dataset_dir, "val")
-    raw_test_frame = load_split(dataset_dir, "test")
-    raw_frame = raw_val_frame if args.split == "val" else raw_test_frame
-    raw_history_frame = raw_train_frame if args.split == "val" else pd.concat(
-        [raw_train_frame, raw_val_frame],
-        ignore_index=True,
-    )
+    raw_history_frame: pd.DataFrame | None
+    if args.split == "holdout":
+        if not args.holdout_path:
+            raise ValueError("--holdout-path is required when --split holdout is used.")
+        raw_frame = load_frame(Path(args.holdout_path))
+        raw_history_frame = None
+    else:
+        if not args.dataset_dir:
+            raise ValueError("--dataset-dir is required for val/test ensemble evaluation.")
+        dataset_dir = Path(args.dataset_dir)
+        raw_train_frame = load_split(dataset_dir, "train")
+        raw_val_frame = load_split(dataset_dir, "val")
+        raw_test_frame = load_split(dataset_dir, "test")
+        raw_frame = raw_val_frame if args.split == "val" else raw_test_frame
+        raw_history_frame = raw_train_frame if args.split == "val" else pd.concat(
+            [raw_train_frame, raw_val_frame],
+            ignore_index=True,
+        )
     device = torch.device(args.device)
 
     members: list[dict[str, object]] = []
@@ -138,10 +157,12 @@ def main() -> None:
         label = str(checkpoint["label"])
         target_mode = str(checkpoint.get("target_mode", "absolute"))
         context_length = int(checkpoint["context_length"])
-        feature_columns = list(checkpoint.get("feature_columns", list(DEFAULT_SEQUENCE_FEATURES)))
+        feature_columns = list(checkpoint.get("feature_columns", list(LEGACY_SEQUENCE_FEATURES)))
 
         prepared_frame, target_column = prepare_target_frame(raw_frame, label, target_mode)
-        prepared_history_frame, _ = prepare_target_frame(raw_history_frame, label, target_mode)
+        prepared_history_frame = None
+        if raw_history_frame is not None:
+            prepared_history_frame, _ = prepare_target_frame(raw_history_frame, label, target_mode)
         standardizer = restore_standardizer(checkpoint)
         dataset = PDUPowerSequenceDataset(
             frame=prepared_frame,
@@ -160,6 +181,7 @@ def main() -> None:
             num_layers=int(checkpoint.get("num_layers", 2)),
             dropout=float(checkpoint.get("dropout", 0.1)),
             nhead=int(checkpoint.get("nhead", 4)),
+            pooling=str(checkpoint.get("pooling", "last")),
         ).to(device)
         model.load_state_dict(checkpoint["state_dict"])
 

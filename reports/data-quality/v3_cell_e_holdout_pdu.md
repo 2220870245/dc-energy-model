@@ -1,0 +1,26 @@
+# Dataset Quality Report: v3_cell_e_holdout_pdu
+
+- label: `measured_power_util`
+- total rows: 2991
+- duplicate keys: 0
+- label min: 0.589
+- label max: 0.795
+- split mode: full_only
+
+## Missing Rate By Column
+- window_start: 0.000000
+- cell: 0.000000
+- pdu: 0.000000
+- measured_power_util: 0.000000
+- production_power_util: 0.000000
+- instance_count: 0.000000
+- collection_count: 0.000000
+- machine_count: 0.000000
+- total_cpu_usage: 0.000000
+- avg_cpu_usage: 0.000000
+- max_cpu_usage: 0.000000
+- hour: 0.000000
+- day_of_week: 0.000000
+- is_weekend: 0.000000
+- prev_measured_power_util: 0.000000
+- prev_total_cpu_usage: 0.000000

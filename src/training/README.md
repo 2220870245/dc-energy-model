@@ -48,6 +48,8 @@ Recommended defaults now include:
 - validation and test sequence windows that inherit context from earlier splits
 - early stopping with `epochs=80`, `patience=12`, `min_epochs=20`
 - `batch_size=32`, `weight_decay=1e-4`, `grad_clip=1.0`
+- configurable sequence `feature_set` values: `legacy`, `cyclic`, `compact`, `enhanced`
+- configurable sequence pooling: `last`, `mean`, `last_mean`
 
 For the current tuned run, use:
 
@@ -122,6 +124,178 @@ Loss / normalization follow-up:
 - `HuberLoss(delta=0.5)` was worse again
 - disabling target standardization (`target_scaling=none`) was clearly harmful and pushed the best checkpoint to the final epoch
 - the best known single-model setup still remains `MSE + standard target scaling + weight_decay=1e-3`
+
+`v2` holdout repeated-run validation is available with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/run_holdout_stability.py `
+  --train-config configs/deep-learning/lstm-residual-v2-best.json `
+  --holdout-path data/processed/v2_holdout_pdu/full.parquet `
+  --output-dir reports/comparisons/v2_holdout_repeated `
+  --seed 42 `
+  --seed 7 `
+  --seed 21 `
+  --baseline-model random_forest
+```
+
+Repeated-run outputs:
+- `reports/comparisons/v2_holdout_repeated/stability_metrics.csv`
+- `reports/comparisons/v2_holdout_repeated/stability_metrics.json`
+- `reports/comparisons/v2_holdout_repeated/stability_summary.md`
+
+`v2` holdout ensemble evaluation is available with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/evaluate_sequence_ensemble.py `
+  --holdout-path data/processed/v2_holdout_pdu/full.parquet `
+  --output-dir reports/comparisons/v2_holdout_repeated/lstm_ensemble_holdout `
+  --split holdout `
+  --name v2_holdout_lstm_residual_h96_wd1e3_ensemble `
+  --checkpoint reports/comparisons/v2_holdout_repeated/deep-models/seed42/lstm_best.pt `
+  --checkpoint reports/comparisons/v2_holdout_repeated/deep-models/seed7/lstm_best.pt `
+  --checkpoint reports/comparisons/v2_holdout_repeated/deep-models/seed21/lstm_best.pt
+```
+
+Holdout ensemble outputs:
+- `reports/comparisons/v2_holdout_repeated/lstm_ensemble_holdout/ensemble_metrics.json`
+- `reports/comparisons/v2_holdout_repeated/lstm_ensemble_holdout/ensemble_summary.md`
+
+Current best generalized `v2` recipe is the `last_mean` pooling follow-up:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/run_holdout_stability.py `
+  --train-config configs/deep-learning/lstm-residual-v2-last-mean.json `
+  --holdout-path data/processed/v2_holdout_pdu_opt/full.parquet `
+  --output-dir reports/comparisons/v2_holdout_repeated_last_mean `
+  --seed 42 `
+  --seed 7 `
+  --seed 21 `
+  --baseline-model random_forest
+```
+
+Generalization summary for `last_mean`:
+- repeated holdout mean: `0.0031159091 / 0.0044552966 / 0.9910355092`
+- previous repeated holdout mean: `0.0037102647 / 0.0050186245 / 0.9886073640`
+- repeated test mean is slightly worse than the old `last` head, but holdout generalization is materially better
+
+`last_mean` ensemble evaluation is available with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/evaluate_sequence_ensemble.py `
+  --holdout-path data/processed/v2_holdout_pdu_opt/full.parquet `
+  --output-dir reports/comparisons/v2_holdout_repeated_last_mean/lstm_ensemble_holdout `
+  --split holdout `
+  --name v2_holdout_lstm_legacy_last_mean_ensemble `
+  --checkpoint reports/comparisons/v2_holdout_repeated_last_mean/deep-models/seed42/lstm_best.pt `
+  --checkpoint reports/comparisons/v2_holdout_repeated_last_mean/deep-models/seed7/lstm_best.pt `
+  --checkpoint reports/comparisons/v2_holdout_repeated_last_mean/deep-models/seed21/lstm_best.pt
+```
+
+Flex-enhanced follow-up:
+- packaged flexibility windows are available under `data/processed/google_flex_windows_v1`
+- merged datasets are available under `data/processed/v2_expanded_dev_flex` and `data/processed/v2_holdout_pdu_flex`
+- the current strongest unseen-PDU `v2` setup is the flex-enhanced `last_mean` LSTM
+
+Run the flex-enhanced repeated holdout validation with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/run_holdout_stability.py `
+  --train-config configs/deep-learning/lstm-residual-v2-flex-last-mean.json `
+  --holdout-path data/processed/v2_holdout_pdu_flex/full.parquet `
+  --output-dir reports/comparisons/v2_holdout_repeated_flex_last_mean `
+  --seed 42 `
+  --seed 7 `
+  --seed 21 `
+  --baseline-model random_forest
+```
+
+Current flex-enhanced repeated result:
+- test mean: `0.0026197596 / 0.0032828317 / 0.9939579362`
+- holdout mean: `0.0026618235 / 0.0039473265 / 0.9929653942`
+- this is worse on the in-domain test split, but substantially better on the unseen-PDU holdout than the non-flex `last_mean` control
+
+Flex-enhanced holdout ensemble:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/evaluate_sequence_ensemble.py `
+  --holdout-path data/processed/v2_holdout_pdu_flex/full.parquet `
+  --output-dir reports/comparisons/v2_holdout_repeated_flex_last_mean/lstm_ensemble_holdout `
+  --split holdout `
+  --name v2_holdout_lstm_flex_last_mean_ensemble `
+  --checkpoint reports/comparisons/v2_holdout_repeated_flex_last_mean/deep-models/seed42/lstm_best.pt `
+  --checkpoint reports/comparisons/v2_holdout_repeated_flex_last_mean/deep-models/seed7/lstm_best.pt `
+  --checkpoint reports/comparisons/v2_holdout_repeated_flex_last_mean/deep-models/seed21/lstm_best.pt
+```
+
+`v3` cross-cell holdout repeated-run validation is available with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/run_holdout_stability.py `
+  --train-config configs/deep-learning/lstm-residual-v3-cell-e-best.json `
+  --holdout-path data/processed/v3_cell_e_holdout_pdu/full.parquet `
+  --output-dir reports/comparisons/v3_cell_e_holdout_repeated `
+  --seed 42 `
+  --seed 7 `
+  --seed 21 `
+  --baseline-model random_forest
+```
+
+Cross-cell repeated-run outputs:
+- `reports/comparisons/v3_cell_e_holdout_repeated/stability_metrics.csv`
+- `reports/comparisons/v3_cell_e_holdout_repeated/stability_metrics.json`
+- `reports/comparisons/v3_cell_e_holdout_repeated/stability_summary.md`
+
+`v3` holdout ensemble evaluation is available with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/evaluate_sequence_ensemble.py `
+  --holdout-path data/processed/v3_cell_e_holdout_pdu/full.parquet `
+  --output-dir reports/comparisons/v3_cell_e_holdout_repeated/lstm_ensemble_holdout `
+  --split holdout `
+  --name v3_cell_e_holdout_lstm_residual_h96_wd1e3_ensemble `
+  --checkpoint reports/comparisons/v3_cell_e_holdout_repeated/deep-models/seed42/lstm_best.pt `
+  --checkpoint reports/comparisons/v3_cell_e_holdout_repeated/deep-models/seed7/lstm_best.pt `
+  --checkpoint reports/comparisons/v3_cell_e_holdout_repeated/deep-models/seed21/lstm_best.pt
+```
+
+Cross-cell holdout ensemble outputs:
+- `reports/comparisons/v3_cell_e_holdout_repeated/lstm_ensemble_holdout/ensemble_metrics.json`
+- `reports/comparisons/v3_cell_e_holdout_repeated/lstm_ensemble_holdout/ensemble_summary.md`
+
+`v4` third external-validation repeated-run is available with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/run_holdout_stability.py `
+  --train-config configs/deep-learning/lstm-residual-v4-cell-b-best.json `
+  --holdout-path data/processed/v4_cell_b_holdout_pdu/full.parquet `
+  --output-dir reports/comparisons/v4_cell_b_holdout_repeated `
+  --seed 42 `
+  --seed 7 `
+  --seed 21 `
+  --baseline-model random_forest
+```
+
+Third external-validation outputs:
+- `reports/comparisons/v4_cell_b_holdout_repeated/stability_metrics.csv`
+- `reports/comparisons/v4_cell_b_holdout_repeated/stability_metrics.json`
+- `reports/comparisons/v4_cell_b_holdout_repeated/stability_summary.md`
+
+`v4` holdout ensemble evaluation is available with:
+
+```powershell
+& 'C:\Users\22208\anaconda3\envs\dc-energy\python.exe' src/training/evaluate_sequence_ensemble.py `
+  --holdout-path data/processed/v4_cell_b_holdout_pdu/full.parquet `
+  --output-dir reports/comparisons/v4_cell_b_holdout_repeated/lstm_ensemble_holdout `
+  --split holdout `
+  --name v4_cell_b_holdout_lstm_residual_h96_wd1e3_ensemble `
+  --checkpoint reports/comparisons/v4_cell_b_holdout_repeated/deep-models/seed42/lstm_best.pt `
+  --checkpoint reports/comparisons/v4_cell_b_holdout_repeated/deep-models/seed7/lstm_best.pt `
+  --checkpoint reports/comparisons/v4_cell_b_holdout_repeated/deep-models/seed21/lstm_best.pt
+```
+
+Third external-validation ensemble outputs:
+- `reports/comparisons/v4_cell_b_holdout_repeated/lstm_ensemble_holdout/ensemble_metrics.json`
+- `reports/comparisons/v4_cell_b_holdout_repeated/lstm_ensemble_holdout/ensemble_summary.md`
 
 ## Compare Baseline vs Deep Models
 

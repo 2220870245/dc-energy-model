@@ -1,0 +1,78 @@
+{
+  "name": "v2_holdout_lstm_flex_last_mean_ensemble",
+  "split": "holdout",
+  "member_count": 3,
+  "members": [
+    {
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated_flex_last_mean\\deep-models\\seed42\\lstm_best.pt",
+      "model": "lstm",
+      "label": "measured_power_util",
+      "target_mode": "residual",
+      "context_length": 12,
+      "hidden_size": 96,
+      "num_layers": 1,
+      "dropout": 0.1,
+      "nhead": 4,
+      "pooling": "last_mean",
+      "metrics": {
+        "mae": 0.0026658824644982815,
+        "rmse": 0.0039354475066647404,
+        "mape": 0.004007520619779825,
+        "smape": 0.004006132949143648,
+        "r2": 0.9930078445808196
+      }
+    },
+    {
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated_flex_last_mean\\deep-models\\seed7\\lstm_best.pt",
+      "model": "lstm",
+      "label": "measured_power_util",
+      "target_mode": "residual",
+      "context_length": 12,
+      "hidden_size": 96,
+      "num_layers": 1,
+      "dropout": 0.1,
+      "nhead": 4,
+      "pooling": "last_mean",
+      "metrics": {
+        "mae": 0.002660603728145361,
+        "rmse": 0.003975134429780874,
+        "mape": 0.003995798993855715,
+        "smape": 0.003996133804321289,
+        "r2": 0.9928661091366806
+      }
+    },
+    {
+      "checkpoint": "reports\\comparisons\\v2_holdout_repeated_flex_last_mean\\deep-models\\seed21\\lstm_best.pt",
+      "model": "lstm",
+      "label": "measured_power_util",
+      "target_mode": "residual",
+      "context_length": 12,
+      "hidden_size": 96,
+      "num_layers": 1,
+      "dropout": 0.1,
+      "nhead": 4,
+      "pooling": "last_mean",
+      "metrics": {
+        "mae": 0.0026589843910187483,
+        "rmse": 0.003931397418135339,
+        "mape": 0.003997224848717451,
+        "smape": 0.003994939848780632,
+        "r2": 0.993022228961564
+      }
+    }
+  ],
+  "member_metric_mean": {
+    "mae": 0.0026618235278874636,
+    "rmse": 0.003947326451526984,
+    "mape": 0.004000181487450997,
+    "smape": 0.00399906886741519,
+    "r2": 0.9929653942263549
+  },
+  "ensemble_metrics": {
+    "mae": 0.0025987999979406595,
+    "rmse": 0.0038902353272464774,
+    "mape": 0.0039029831532388926,
+    "smape": 0.003901915391907096,
+    "r2": 0.9931675792849034
+  }
+}
